@@ -1,7 +1,8 @@
 #include <WiFi.h>
 
 const char* ssid     = "no_connection";
-const char* password = "PWD_FILL_ME";
+//const char* password = "PWD_FILL_ME";
+#include "wlan_password.h"
 
 const char* host = "192.168.10.116";
 const int   port = 2121;
@@ -23,13 +24,13 @@ void setup()
     Serial.println("Air sensor not detected. Please check wiring. Freezing...");
     while (1)
       ;
-  }
+  }  
 
   // We start by connecting to a WiFi network
   Serial.println("init network");
   WiFi.begin(ssid, password);
   Serial.println("Connecting to ");
-
+  
   Serial.println(String(ssid));
   Serial.println("MAC: " + WiFi.macAddress());
   while (WiFi.status() != WL_CONNECTED) {
@@ -83,7 +84,7 @@ void loop()
   client.print(", temp(C): ");
   client.print(airSensor.getTemperature(), 1);
   client.print(", humidity(%):");
-  client.println(airSensor.getHumidity(), 1);
+  client.println(airSensor.getHumidity(), 1);  
 
   delay(500);
 }

@@ -40,7 +40,6 @@ SCD30 airSensor;
 
 WiFiMulti wifiMulti;
 
-
 void setup()
 {
   Serial.begin(115200);
@@ -65,6 +64,40 @@ void setup()
 
 }
 
+void push_volkszaehler (const char* UUID, float value)
+{
+  HTTPClient http;
+
+  //Serial.print("[HTTP] begin...\n");
+  char buf[300];
+  snprintf (buf, 300, "http://demo.volkszaehler.org/middleware/data/%s.json?operation=add&value=%.2f", UUID, value);
+  
+  // debugging
+  //Serial.print (buf);
+  http.begin(buf);
+
+  int httpCode = http.GET();
+
+  // httpCode will be negative on error
+  if(httpCode > 0)
+    {
+        // HTTP header has been send and Server response header has been handled
+        //Serial.printf("[HTTP] GET... code: %d\n", httpCode);
+  
+        // file found at server
+        if(httpCode == HTTP_CODE_OK) {
+            String payload = http.getString();
+            //Serial.println(payload);
+        }
+    }
+  else
+    {
+        Serial.printf("[HTTP] GET... failed, error: %s\n", http.errorToString(httpCode).c_str());
+    }
+
+  http.end();
+}
+
 void loop()
 {
   if (airSensor.dataAvailable())
@@ -79,43 +112,17 @@ void loop()
     Serial.print(airSensor.getHumidity(), 1);
 
     Serial.println();
+
+    // wait for WiFi connection
+    if((wifiMulti.run() == WL_CONNECTED))
+    {
+      push_volkszaehler ("c1395870-25f6-11eb-9fc9-37a6fcdfe7d3", airSensor.getCO2());
+      push_volkszaehler ("d9f3a1c0-25ff-11eb-ba27-4d0a31ced83f", airSensor.getTemperature());
+      push_volkszaehler ("efdc1a80-25ff-11eb-9a66-950175c1511f", airSensor.getHumidity());
+    }
   }
   else
     Serial.println("Waiting for new data");
 
-
-
-    // wait for WiFi connection
-    if((wifiMulti.run() == WL_CONNECTED)) {
-
-        HTTPClient http;
-
-        Serial.print("[HTTP] begin...\n");
-        // configure traged server and url
-        //http.begin("https://www.howsmyssl.com/a/check", ca); //HTTPS
-        http.begin("http://demo.volkszaehler.org/middleware/data/84c96190-25f8-11eb-8265-d7d703fabc64.json?operation=add&value=500"); //HTTP
-
-        Serial.print("[HTTP] GET...\n");
-        // start connection and send HTTP header
-        int httpCode = http.GET();
-
-        // httpCode will be negative on error
-        if(httpCode > 0) {
-            // HTTP header has been send and Server response header has been handled
-            Serial.printf("[HTTP] GET... code: %d\n", httpCode);
-
-            // file found at server
-            if(httpCode == HTTP_CODE_OK) {
-                String payload = http.getString();
-                Serial.println(payload);
-            }
-        } else {
-            Serial.printf("[HTTP] GET... failed, error: %s\n", http.errorToString(httpCode).c_str());
-        }
-
-        http.end();
-    }
-
-  delay(500);
-
+  delay(1500);
 }

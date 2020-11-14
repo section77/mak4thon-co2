@@ -43,7 +43,7 @@
 #include "SparkFun_SCD30_Arduino_Library.h" //Click here to get the library: http://librarymanager/All#SparkFun_SCD30
 SCD30 airSensor;
 
-WiFiMulti wifiMulti;
+WiFiClient client;
 
 // Hardwaresettings
 const int ledPinRed = 17;
@@ -57,7 +57,7 @@ RH_RF95 rf95(18, 26); // WiFi Lora 32 V2 (integriert)
 void setup()
 {
   Serial.begin(115200);
-  Serial.println("SCD30 Example");
+  Serial.println("CO2-api: Luftqualität messen, anzeigen und über Wifi oder LoRa weitergeben");
   Wire.begin();
 
   if (airSensor.begin() == false)
@@ -67,10 +67,25 @@ void setup()
       ;
   }
 
-  if (wifiMulti.addAP(ssid, wlan_password) == false) {
-    Serial.println("WiFi ssid or passwort not correct. Please check wlan_settings.h. Freezing ...");
-    //while(true){};
+  Serial.println("init WiFi network");
+  WiFi.begin(ssid, wlan_password);
+  Serial.println("Connecting to ");
+
+  Serial.println(String(ssid));
+  Serial.println("MAC: " + WiFi.macAddress());
+  uint8_t max_wifi_retry = 10;  // entspricht 5s
+  while (WiFi.status() != WL_CONNECTED && --max_wifi_retry) {
+    delay(500);
+    Serial.print(".");
   }
+  if (max_wifi_retry)
+    {
+      Serial.println("");
+      Serial.println("WiFi connected ");
+      Serial.println(WiFi.localIP().toString());
+    }
+  else
+    Serial.println("WiFi NOT connected (using LoRa fallback)");
 
   // RGB LED Ports konfigurieren
   pinMode(ledPinRed, OUTPUT);
@@ -100,16 +115,16 @@ void setup()
   //  rf95.setTxPower(14, true);
 }
 
-void push_volkszaehler (const char* UUID, float value)
+uint8_t push_http (const char* url, const char* UUID, float value)
 {
+  uint8_t ret = 0;
   HTTPClient http;
 
-  //Serial.print("[HTTP] begin...\n");
   char buf[300];
-  snprintf (buf, 300, "http://demo.volkszaehler.org/middleware/data/%s.json?operation=add&value=%.2f", UUID, value);
+  snprintf (buf, 300, "%s%s.json?operation=add&value=%.2f", url, UUID, value);
 
   // debugging
-  //Serial.print (buf);
+  //Serial.println (buf);
   http.begin(buf);
 
   int httpCode = http.GET();
@@ -120,110 +135,115 @@ void push_volkszaehler (const char* UUID, float value)
         // HTTP header has been send and Server response header has been handled
         //Serial.printf("[HTTP] GET... code: %d\n", httpCode);
 
-        // file found at server
-        if(httpCode == HTTP_CODE_OK) {
-            String payload = http.getString();
-            //Serial.println(payload);
-        }
+        if(httpCode == HTTP_CODE_OK)
+          Serial.println("sent value via http");
+        else
+          ret = -1;
     }
   else
     {
-        Serial.printf("[HTTP] GET... failed, error: %s\n", http.errorToString(httpCode).c_str());
+      Serial.printf("[HTTP] GET failed, error: %s\n", http.errorToString(httpCode).c_str());
+      ret = -1;
     }
-
   http.end();
+  return ret;
+}
 
+void push_LoRa (const char* UUID, float value)
+{
+  // Messwert an die LoRa-WiFi-Bridge senden
+  char value_buf[100];
+  snprintf (value_buf, 100, "%s;%.2f", UUID, value);
+  rf95.send((uint8_t *)value_buf, sizeof(value_buf));
+  rf95.waitPacketSent();
+  // Wir erwarten keine Antwort von der LoRa_WiFi_Bridge
+  Serial.println("sent value via LoRa");
+}
+
+void push_value (const char* UUID, float value)
+{
+  // Debugging: Send to host in LAN
+  // push_http ("http://192.168.10.116:8888", UUID, value);
+
+  if(WiFi.status() == WL_CONNECTED)
+    {
+      if (push_http ("http://demo.volkszaehler.org/middleware/data/", UUID, value))
+        {
+          Serial.println("http failed, fallback to LoRa");
+          push_LoRa (UUID, value);
+        }
+    }
+  else
+    push_LoRa (UUID, value);
+}
+
+void pre ()
+{
+  u8x8.clear();
+  u8x8.setCursor(0, 2);
+  if (WiFi.status() == WL_CONNECTED)
+    u8x8.print("WiFi");
+  else
+    u8x8.print("LoRa");
+
+  u8x8.setCursor(0, 5);
 }
 
 void loop()
 {
   if (airSensor.dataAvailable())
-  {
-    if(airSensor.getCO2() > 1000) { // red
-        digitalWrite(ledPinRed, HIGH);
-        digitalWrite(ledPinGreen, LOW);
-        digitalWrite(ledPinBlue, LOW);
-    } else if(airSensor.getCO2() > 800) {  // yellow
-        digitalWrite(ledPinRed, HIGH);
-        digitalWrite(ledPinGreen, HIGH);
-        digitalWrite(ledPinBlue, LOW);
-    } else {  // green
-        digitalWrite(ledPinRed, LOW);
-        digitalWrite(ledPinGreen, HIGH);
-        digitalWrite(ledPinBlue, LOW);
-    }
-
-    Serial.print("co2(ppm):");
-    Serial.print(airSensor.getCO2());
-
-    Serial.print(" temp(C):");
-    Serial.print(airSensor.getTemperature(), 1);
-
-    Serial.print(" humidity(%):");
-    Serial.print(airSensor.getHumidity(), 1);
-
-    Serial.println();
-
-    u8x8.clear();
-    u8x8.setCursor(0, 5);
-    u8x8.printf("%ippm", airSensor.getCO2());
-    delay (1500);
-
-    u8x8.clear();
-    u8x8.setCursor(0, 5);
-    u8x8.printf("%.1f", airSensor.getTemperature());
-    u8x8.print("\xb0");
-    u8x8.print("C");
-    delay (1500);
-
-    u8x8.clear();
-    u8x8.setCursor(0, 5);
-    u8x8.printf("%.1f%%rH", airSensor.getHumidity());
-    delay (1500);
-
-    // wait for WiFi connection
-    if((wifiMulti.run() == WL_CONNECTED))
     {
-      push_volkszaehler (uuid_co2, airSensor.getCO2());
-      push_volkszaehler (uuid_temp, airSensor.getTemperature());
-      push_volkszaehler (uuid_humidity, airSensor.getHumidity());
+      uint16_t co2 = airSensor.getCO2();
+      float humidity = airSensor.getHumidity();
+      float temperature = airSensor.getTemperature();
+
+      if(co2 > 1000) { // red
+          digitalWrite(ledPinRed, HIGH);
+          digitalWrite(ledPinGreen, LOW);
+          digitalWrite(ledPinBlue, LOW);
+      } else if(co2 > 800) {  // yellow
+          digitalWrite(ledPinRed, HIGH);
+          digitalWrite(ledPinGreen, HIGH);
+          digitalWrite(ledPinBlue, LOW);
+      } else {  // green
+          digitalWrite(ledPinRed, LOW);
+          digitalWrite(ledPinGreen, HIGH);
+          digitalWrite(ledPinBlue, LOW);
+      }
+
+      Serial.print("co2(ppm):");
+      Serial.print(co2);
+
+      Serial.print(" temp(C):");
+      Serial.print(temperature, 1);
+
+      Serial.print(" humidity(%):");
+      Serial.print(humidity, 1);
+
+      Serial.println();
+
+      pre ();
+      u8x8.printf("%ippm", co2);
+      push_value (uuid_co2, co2);
+      delay (1000);
+
+      pre ();
+      u8x8.printf("%.1f", temperature);
+      u8x8.print("\xb0");
+      u8x8.print("C");
+      push_value (uuid_temp, temperature);
+      delay (1000);
+
+      pre ();
+      u8x8.printf("%.1f%%rH", humidity);
+      push_value (uuid_humidity, humidity);
+      delay (1000);
     }
-  }
   else
     {
-      Serial.println("Waiting for new data");
+      Serial.println("Waiting for new SCD30 data");
       delay(1000);
     }
 
-  // Send a message to rf95_server
-  char value_buf[100];
-  snprintf (value_buf, 100, "%u;%.1f;%.1f", airSensor.getCO2(), airSensor.getTemperature(), airSensor.getHumidity());
-  rf95.send((uint8_t *)value_buf, sizeof(value_buf));
 
-  rf95.waitPacketSent();
-
-  // Now wait for a reply
-  uint8_t buf[RH_RF95_MAX_MESSAGE_LEN];
-  uint8_t len = sizeof(buf);
-
-  if (rf95.waitAvailableTimeout(3000))
-  {
-    // Should be a reply message for us now
-    if (rf95.recv(buf, &len))
-      {
-        Serial.print("got reply: ");
-        Serial.println((char*)buf);
-        // Serial.print("RSSI: ");
-        // Serial.println(rf95.lastRssi(), DEC);
-      }
-    else
-      {
-        Serial.println("recv failed");
-      }
-
-  }
-  else
-  {
-    Serial.println("No reply, is rf95_server running?");
-  }
 }

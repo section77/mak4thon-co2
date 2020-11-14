@@ -1,0 +1,20 @@
+version: '3.3'
+services:
+  # The grafana container uses the image resulting from the build
+  # of `./grafana` which simply packs some configuration into the
+  # form of an image.
+  #
+  # This could instead be a volume-mounted container.
+  dockercompose-influxdb-grafana:
+    build: './grafana'
+    container_name: dockercompose-influxdb-grafana
+    ports:
+      - '3003:3003'
+      - '3004:8083'
+      - '8086:8086'
+    volumes:
+      - 'data:/var/lib/influxdb'
+      - 'data:/var/lib/grafana'
+    image: 'philhawthorne/docker-influxdb-grafana:latest'
+volumes:
+    data:

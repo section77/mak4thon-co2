@@ -47,8 +47,16 @@ difference() { // case
 
 }
 
-// rail for back cover
-difference() {
-  translate([0,depth/2+wall,0]) cube([width, wall*2, height], center=true);
-  translate([0,depth/2+wall*2,10]) cube([width-wall*5, wall*5, height+wall*5], center=true);
-  translate([0,depth/2+wall/2,10]) cube([width-wall, wall*2, height+wall*9], center=true);}
+translate([(width/2-wall*1.5), 0, (height/2-wall*1.5)], center=true) corner();
+translate([-(width/2-wall*1.5), 0, -(height/2-wall*1.5)], center=true) corner();
+translate([-(width/2-wall*1.5), 0, height/2-wall*1.5], center=true) corner();
+translate([width/2-wall*1.5, 0, -(height/2-wall*1.5)], center=true) corner();
+
+module corner() { // corner blocks for screws
+  width=4;
+  hole=2;
+  difference() {
+    translate([0,0,0]) cube([width, depth, width], center=true);
+    translate([0,1,0]) rotate([90,0,0]) cylinder(d=hole, h=depth, center=true);
+  }
+}

@@ -20,7 +20,7 @@
   "links": [],
   "panels": [
     {
-      "datasource": "InfluxDB",
+      "datasource": "InfluxDB-docker",
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -107,7 +107,7 @@
           ],
           "measurement": "co2measurement",
           "orderByTime": "ASC",
-          "policy": "autogen",
+          "policy": "default",
           "refId": "A",
           "resultFormat": "time_series",
           "select": [
@@ -143,7 +143,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "InfluxDB",
+      "datasource": "InfluxDB-docker",
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -204,7 +204,7 @@
           ],
           "measurement": "co2measurement",
           "orderByTime": "ASC",
-          "policy": "autogen",
+          "policy": "default",
           "refId": "A",
           "resultFormat": "time_series",
           "select": [
@@ -304,7 +304,7 @@
           "text": "Raum 1",
           "value": "Raum 1"
         },
-        "datasource": "InfluxDB",
+        "datasource": "InfluxDB-docker",
         "definition": "",
         "hide": 0,
         "includeAll": false,
@@ -312,7 +312,7 @@
         "multi": false,
         "name": "Raum",
         "options": [],
-        "query": "SELECT room FROM \"co2\".\"autogen\".\"co2measurement\"",
+        "query": "SHOW TAG VALUES FROM \"co2measurement\" WITH KEY = \"room\"",
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,

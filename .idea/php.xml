@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PhpIncludePathManager">
+    <include_path>
+      <path value="$PROJECT_DIR$/dummy-data/vendor/ralouphie/getallheaders" />
+      <path value="$PROJECT_DIR$/dummy-data/vendor/influxdb/influxdb-php" />
+      <path value="$PROJECT_DIR$/dummy-data/vendor/psr/http-client" />
+      <path value="$PROJECT_DIR$/dummy-data/vendor/psr/http-message" />
+      <path value="$PROJECT_DIR$/dummy-data/vendor/guzzlehttp/guzzle" />
+      <path value="$PROJECT_DIR$/dummy-data/vendor/guzzlehttp/psr7" />
+      <path value="$PROJECT_DIR$/dummy-data/vendor/guzzlehttp/promises" />
+      <path value="$PROJECT_DIR$/dummy-data/vendor/composer" />
+    </include_path>
+  </component>
+</project>

@@ -20,7 +20,7 @@
   "links": [],
   "panels": [
     {
-      "datasource": "InfluxDB",
+      "datasource": "InfluxDB-docker",
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -117,7 +117,7 @@
           ],
           "measurement": "co2measurement",
           "orderByTime": "ASC",
-          "policy": "autogen",
+          "policy": "default",
           "refId": "A",
           "resultFormat": "time_series",
           "select": [
@@ -149,7 +149,7 @@
       "type": "gauge"
     },
     {
-      "datasource": "InfluxDB",
+      "datasource": "InfluxDB-docker",
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -247,7 +247,7 @@
           ],
           "measurement": "co2measurement",
           "orderByTime": "ASC",
-          "policy": "autogen",
+          "policy": "default",
           "refId": "A",
           "resultFormat": "time_series",
           "select": [
@@ -279,7 +279,7 @@
       "type": "gauge"
     },
     {
-      "datasource": "InfluxDB",
+      "datasource": "InfluxDB-docker",
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -377,7 +377,7 @@
           ],
           "measurement": "co2measurement",
           "orderByTime": "ASC",
-          "policy": "autogen",
+          "policy": "default",
           "refId": "A",
           "resultFormat": "time_series",
           "select": [
@@ -425,7 +425,7 @@
             "Raum 1"
           ]
         },
-        "datasource": "InfluxDB",
+        "datasource": "InfluxDB-docker",
         "definition": "",
         "hide": 0,
         "includeAll": true,
@@ -454,7 +454,7 @@
             "value": "Raum 3"
           }
         ],
-        "query": "SELECT room FROM \"co2\".\"autogen\".\"co2measurement\"",
+        "query": "SELECT room FROM \"co2\".\"default\".\"co2measurement\"",
         "refresh": 0,
         "regex": "",
         "skipUrlSync": false,

@@ -18,7 +18,7 @@ set -o errexit
 
 readonly URL=${URL:-"http://localhost:3003"}
 readonly LOGIN=${LOGIN:-"root:root"}
-readonly DASHBOARDS_DIRECTORY=${DASHBOARDS_DIRECTORY:-"./grafana/dashboards"}
+readonly DASHBOARDS_DIRECTORY=${DASHBOARDS_DIRECTORY:-"./dashboards"}
 
 
 main() {

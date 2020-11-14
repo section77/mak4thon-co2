@@ -1,0 +1,20 @@
+Wir haben 2x LoRa Hardware bekommen:
+
+- RFM9x LoRa 868/915MHz: https://www.adafruit.com/product/3072
+- WiFi Lora 32 V2 hat auch LoRa: https://heltec.org/project/wifi-lora-32/
+
+Libs:
+  Ich habe am Freitag Abend die "LoRa" Lib 0.7.2 von Sandeep Mistry
+  aus dem arduino Bibliotheksverwalter ausprobiert, weil sie ca. 800 stars auf github hat.
+
+  Settings für das "WiFi Lora 32 V2" Board:
+    LoRa.setPins(18, 14, 26); // set CS, reset, IRQ pin
+
+  Adafruit listet libs auf:
+  - LowPowerLab's RFM69 Library https://github.com/LowPowerLab/RFM69
+  - AirSpayce's Radiohead library http://www.airspayce.com/mikem/arduino/RadioHead/
+
+  Adafruit empfiehlt im Tutorial die Radiohead lib:
+  von http://www.airspayce.com/mikem/arduino/RadioHead/ das Zip laden und installieren
+
+  Der Treiber für unseren LoRa Chip ist der "RH_RF95"

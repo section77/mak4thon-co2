@@ -7,3 +7,5 @@ CO2-api/uuids.h
 CO2-api/wlan_settings.h
 
 >>>>>>> e0234efd083685ef7944e5b9ff3abfa1f0785e1b
+
+.gitignore

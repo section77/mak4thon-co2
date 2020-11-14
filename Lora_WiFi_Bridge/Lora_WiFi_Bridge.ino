@@ -49,7 +49,7 @@ void loop()
     uint8_t len = sizeof(buf);
     if (rf95.recv(buf, &len))
     {
-      digitalWrite(led, HIGH);
+      //digitalWrite(led, HIGH);
 //      RH_RF95::printBuffer("request: ", buf, len);
       Serial.print("got request: ");
       Serial.println((char*)buf);
@@ -57,11 +57,11 @@ void loop()
 //      Serial.println(rf95.lastRssi(), DEC);
 
       // Send a reply
-      uint8_t data[] = "Danke!";
-      rf95.send(data, sizeof(data));
-      rf95.waitPacketSent();
-      Serial.println("Sent a reply");
-       digitalWrite(led, LOW);
+      //uint8_t data[] = "Danke!";
+      //rf95.send(data, sizeof(data));
+      //rf95.waitPacketSent();
+      //Serial.println("Sent a reply");
+      // digitalWrite(led, LOW);
     }
     else
     {

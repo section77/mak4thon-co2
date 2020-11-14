@@ -1,0 +1,5 @@
+// Konfigurationsdatei für den volkszaehler.org upload
+// Die UUIDs können dort generiert werden
+const char* uuid_co2 = "<uuid-co2>";
+const char* uuid_temp = "<uuid-temp>";
+const char* uuid_humidity = "<uuid-humidity>";

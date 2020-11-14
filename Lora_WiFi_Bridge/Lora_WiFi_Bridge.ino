@@ -15,6 +15,13 @@
 #include <SPI.h>
 #include <RH_RF95.h>
 
+#include <WiFi.h>
+#include <HTTPClient.h>
+#include "wlan_settings.h"
+#include "uuids.h"
+
+WiFiClient client;
+
 // Singleton instance of the radio driver
 RH_RF95 rf95 (5, 2);  // Adafruit RFM9x am ESP32 ohne Display
 
@@ -24,7 +31,22 @@ void setup()
 {
   pinMode(led, OUTPUT);
   Serial.begin(115200);
-  //while (!Serial) ; // Wait for serial port to be available
+
+  Serial.println("init WiFi network");
+  WiFi.begin(ssid, wlan_password);
+  Serial.println("Connecting to ");
+
+  Serial.println(String(ssid));
+  Serial.println("MAC: " + WiFi.macAddress());
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+
+  Serial.println("");
+  Serial.println("WiFi connected ");
+  Serial.println(WiFi.localIP().toString());
+
   if (!rf95.init())
     Serial.println("init failed");
   // Defaults after init are 434.0MHz, 13dBm, Bw = 125 kHz, Cr = 4/5, Sf = 128chips/symbol, CRC on
@@ -40,6 +62,40 @@ void setup()
   //  driver.setTxPower(14, true);
 }
 
+uint8_t push_http (const char* url, const char* UUID, const char* value)
+{
+  uint8_t ret = 0;
+  HTTPClient http;
+
+  char buf[300];
+  snprintf (buf, 300, "%s%s.json?operation=add&value=%s", url, UUID, value);
+
+  // debugging
+  Serial.println (buf);
+  http.begin(buf);
+
+  int httpCode = http.GET();
+
+  // httpCode will be negative on error
+  if(httpCode > 0)
+    {
+        // HTTP header has been send and Server response header has been handled
+        //Serial.printf("[HTTP] GET... code: %d\n", httpCode);
+
+        if(httpCode == HTTP_CODE_OK)
+          Serial.println("sent value via http");
+        else
+          ret = -1;
+    }
+  else
+    {
+      Serial.printf("[HTTP] GET failed, error: %s\n", http.errorToString(httpCode).c_str());
+      ret = -1;
+    }
+  http.end();
+  return ret;
+}
+
 void loop()
 {
   if (rf95.available())
@@ -51,17 +107,19 @@ void loop()
     {
       //digitalWrite(led, HIGH);
 //      RH_RF95::printBuffer("request: ", buf, len);
-      Serial.print("got request: ");
+      Serial.print("received: ");
       Serial.println((char*)buf);
 //      Serial.print("RSSI: ");
 //      Serial.println(rf95.lastRssi(), DEC);
 
-      // Send a reply
-      //uint8_t data[] = "Danke!";
-      //rf95.send(data, sizeof(data));
-      //rf95.waitPacketSent();
-      //Serial.println("Sent a reply");
-      // digitalWrite(led, LOW);
+      // UUID und value an ";" trennen
+      for (uint8_t k = 0; k < len; ++k)
+        if (buf[k] == ';')
+          {
+            buf[k] = '0';
+            push_http ("http://demo.volkszaehler.org/middleware/data/", (char*) buf, (char*) buf + k + 1);
+            break;
+          }
     }
     else
     {

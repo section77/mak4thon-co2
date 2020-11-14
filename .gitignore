@@ -1,2 +1,3 @@
 .DS_Store
-CO2-api/wlan_password.h
+CO2-api/wlan_settings.h
+CO2-api/uuids.h

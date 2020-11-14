@@ -1,0 +1,27 @@
+Hardwareverbindungen über I2C zum OLED Modul:
+
+  OLED_SDA -- GPIO4
+  OLED_SCL -- GPIO15
+  OLED_RST -- GPIO16
+
+Die Seite https://www.hackerspace-ffm.de/wiki/index.php?title=Heltec_Wifi_LoRa_32
+zählt ein paar Libs für das Display auf sowie die Konfiguration.
+
+=== squix78 ssd1306.h neu: ThingPulse / esp8266-oled-ssd1306 ===
+
+https://github.com/ThingPulse/esp8266-oled-ssd1306
+Kann über den Bibliotheksverwalter installiert werden "ESP8266 and ESP32 Oled Driver for SSD1306 display"
+
+Wird im DisplayWifiTest verwendet aber ich bekomme nicht den SCD30 und das Display gleichzeitig ans laufen
+Siehe https://github.com/ThingPulse/esp8266-oled-ssd1306/issues/235
+
+Scheint ein bekanntes Problem zu sein, dass mit der Lib nicht mehrere I2C Slaves gleichzeitig können
+
+=== Adafruit SSD1306 ===
+
+Die sind bereits von anfang an installiert.
+Ich finde da die Einstellung für die I2C Adresse, aber nicht wo man SCL und SDA anpassen kann
+
+=== U8g2_u8x8 ===
+
+Das läuft gut, siehe U8g2_u8x8/GraphicsTest/GraphicsTest.ino

@@ -33,6 +33,8 @@ void setup()
   Serial.begin(115200);
 
   Serial.println("init WiFi network");
+
+  delay (100);
   WiFi.begin(ssid, wlan_password);
   Serial.println("Connecting to ");
 
@@ -71,7 +73,7 @@ uint8_t push_http (const char* url, const char* UUID, const char* value)
   snprintf (buf, 300, "%s%s.json?operation=add&value=%s", url, UUID, value);
 
   // debugging
-  Serial.println (buf);
+  //Serial.println (buf);
   http.begin(buf);
 
   int httpCode = http.GET();
@@ -116,7 +118,7 @@ void loop()
       for (uint8_t k = 0; k < len; ++k)
         if (buf[k] == ';')
           {
-            buf[k] = '0';
+            buf[k] = 0;
             push_http ("http://demo.volkszaehler.org/middleware/data/", (char*) buf, (char*) buf + k + 1);
             break;
           }

@@ -1,5 +1,15 @@
 # mak-thon
 
+# Grafana Docker Setup
+
+Current implementation uses volkszaehler for gathering sensor data.
+
+Configure Polling settings in poll-volkszaehler/php/config. See [README](poll-volkszaehler/README.md).
+
+```
+docker-compose up
+``
+
 # on co2
 
 co2 is measured in ppm (parts per million)

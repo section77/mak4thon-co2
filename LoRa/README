@@ -18,3 +18,30 @@ Libs:
   von http://www.airspayce.com/mikem/arduino/RadioHead/ das Zip laden und installieren
 
   Der Treiber für unseren LoRa Chip ist der "RH_RF95"
+
+=== LoRa Server: ESP32 Dev Module (az-delivery) mit Adafruit RFM9x Modul === 
+
+ESP32 WROOM (ohne Display) verdrahtet wie in ../official-files/CO2-Empfänger.JPG zu sehen
+
+https://learn.adafruit.com/adafruit-rfm69hcw-and-rfm96-rfm95-rfm98-lora-packet-padio-breakouts/pinouts
+
+Die Verdrahtung als Text:
+
+G0   - violett - G2
+SCK  - braun   - G18
+MISO - orange  - G19
+MOSI - grau    - G23
+CS   - grün    - G5
+RST  - blau    - G14
+
+#define RFM95_RST     14
+#define RFM95_CS      5
+#define RFM95_INT     2
+
+=== Lora Client: WiFi Lora 32 V2 ===
+
+schon intern verdrahtet:
+
+   CS  - G18
+   RST - G14
+   IRQ - G26

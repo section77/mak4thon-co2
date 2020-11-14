@@ -1,65 +1,23 @@
 /*
-  Reading CO2, humidity and temperature from the SCD30
-  By: Nathan Seidle
-  SparkFun Electronics
-  Date: May 22nd, 2018
-  License: MIT. See license file for more information but you can
-  basically do whatever you want with this code.
-
-  Feel like supporting open source hardware?
-  Buy a board from SparkFun! https://www.sparkfun.com/products/15112
-
-  This example prints the current CO2 level, relative humidity, and temperature in C.
-
-  Hardware Connections:
-  Attach RedBoard to computer using a USB cable.
-  Connect SCD30 to RedBoard using Qwiic cable.
-  Open Serial Monitor at 115200 baud.
-*/
-
-/**
- * BasicHTTPClient.ino
+ * Verwendete Hardware:
+ *  - Heltec WiFi Lora 32 V2
+ *  - SCD30
+ *  - RGB LED
  *
- *  Created on: 24.05.2015
+ * Funktionen:
+ *  - CO2, Luftfeuchtigkeit und Temperatur aus dem SCD30 lesen
+ *  - auf dem OLED darstellen
+ *  - Grenzwertüberschreitung an der RGB LED anzeigen
+ *  - Werte über WiFi nach volkszaehler.org schreiben
+ *  - Werte über LoRa senden
+ *  - Debugging über Serial 115200
  *
+ * Verwendete, zusätzliche Bibliotheken:
+ *  - U8g2_u8x8 für OLED (über Bibliotheksverwaltung)
+ *  - SparkFun_SCD30_Arduino_Library (über Bibliotheksverwaltung) https://github.com/sparkfun/SparkFun_SCD30_Arduino_Library
+ *  - Radiohead für LoRa (Zip Download, installieren) http://www.airspayce.com/mikem/arduino/RadioHead/
  */
 
-/*
-
-  GraphicsTest.ino
-
-  Some graphics/text output for U8x8 API
-
-  Universal 8bit Graphics Library (https://github.com/olikraus/u8g2/)
-
-  Copyright (c) 2016, olikraus@gmail.com
-  All rights reserved.
-
-  Redistribution and use in source and binary forms, with or without modification,
-  are permitted provided that the following conditions are met:
-
-  * Redistributions of source code must retain the above copyright notice, this list
-    of conditions and the following disclaimer.
-
-  * Redistributions in binary form must reproduce the above copyright notice, this
-    list of conditions and the following disclaimer in the documentation and/or other
-    materials provided with the distribution.
-
-  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
-  CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
-  INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
-  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-  DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
-  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
-  NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
-  STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
-  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-*/
 #include <Arduino.h>
 #include <U8x8lib.h>
 
@@ -78,19 +36,19 @@
 
 #include <HTTPClient.h>
 #include "wlan_settings.h"
-
 #include "uuids.h"
-
-const int ledPinRed = 17; 
-const int ledPinGreen = 12; 
-const int ledPinBlue = 13; 
 
 #include "SparkFun_SCD30_Arduino_Library.h" //Click here to get the library: http://librarymanager/All#SparkFun_SCD30
 SCD30 airSensor;
 
 WiFiMulti wifiMulti;
 
-U8X8_SSD1306_128X64_NONAME_SW_I2C u8x8(/* clock=*/ 15, /* data=*/ 4, /* reset=*/ 16);         // FIXME Hiltec...
+// Hardwaresettings
+const int ledPinRed = 17;
+const int ledPinGreen = 12;
+const int ledPinBlue = 13;
+
+U8X8_SSD1306_128X64_NONAME_SW_I2C u8x8(/* clock=*/ 15, /* data=*/ 4, /* reset=*/ 16);
 
 void setup()
 {
@@ -107,57 +65,18 @@ void setup()
 
   if (wifiMulti.addAP(ssid, wlan_password) == false) {
     Serial.println("WiFi ssid or passwort not correct. Please check wlan_settings.h. Freezing ...");
-    while(true){};
+    //while(true){};
   }
 
-  //The SCD30 has data ready every two seconds
-
-  delay(10);
-
-  // We start by connecting to a WiFi network
-
+  // RGB LED Ports konfigurieren
   pinMode(ledPinRed, OUTPUT);
   pinMode(ledPinGreen, OUTPUT);
   pinMode(ledPinBlue, OUTPUT);
 
+  // OLED
   u8x8.begin();
+  u8x8.setFont(u8x8_font_courB18_2x3_f);
 
-}
-
-void pre(void) // part of GraphicsTest
-{
-  u8x8.setFont(u8x8_font_amstrad_cpc_extended_f);
-  u8x8.clear();
-
-  u8x8.inverse();
-  u8x8.print(" U8x8 Library ");
-  u8x8.setFont(u8x8_font_chroma48medium8_r);
-  u8x8.noInverse();
-  u8x8.setCursor(0,1);
-}
-
-void draw_bar(uint8_t c, uint8_t is_inverse)
-{
-  uint8_t r;
-  u8x8.setInverseFont(is_inverse);
-  for( r = 0; r < u8x8.getRows(); r++ )
-  {
-    u8x8.setCursor(c, r);
-    u8x8.print(" ");
-  }
-}
-
-void draw_ascii_row(uint8_t r, int start)
-{
-  int a;
-  uint8_t c;
-  for( c = 0; c < u8x8.getCols(); c++ )
-  {
-    u8x8.setCursor(c,r);
-    a = start + c;
-    if ( a <= 255 )
-      u8x8.write(a);
-  }
 }
 
 void push_volkszaehler (const char* UUID, float value)
@@ -167,7 +86,7 @@ void push_volkszaehler (const char* UUID, float value)
   //Serial.print("[HTTP] begin...\n");
   char buf[300];
   snprintf (buf, 300, "http://demo.volkszaehler.org/middleware/data/%s.json?operation=add&value=%.2f", UUID, value);
-  
+
   // debugging
   //Serial.print (buf);
   http.begin(buf);
@@ -179,7 +98,7 @@ void push_volkszaehler (const char* UUID, float value)
     {
         // HTTP header has been send and Server response header has been handled
         //Serial.printf("[HTTP] GET... code: %d\n", httpCode);
-  
+
         // file found at server
         if(httpCode == HTTP_CODE_OK) {
             String payload = http.getString();
@@ -199,6 +118,20 @@ void loop()
 {
   if (airSensor.dataAvailable())
   {
+    if(airSensor.getCO2() > 1000) { // red
+        digitalWrite(ledPinRed, HIGH);
+        digitalWrite(ledPinGreen, LOW);
+        digitalWrite(ledPinBlue, LOW);
+    } else if(airSensor.getCO2() > 800) {  // yellow
+        digitalWrite(ledPinRed, HIGH);
+        digitalWrite(ledPinGreen, HIGH);
+        digitalWrite(ledPinBlue, LOW);
+    } else {  // green
+        digitalWrite(ledPinRed, LOW);
+        digitalWrite(ledPinGreen, HIGH);
+        digitalWrite(ledPinBlue, LOW);
+    }
+
     Serial.print("co2(ppm):");
     Serial.print(airSensor.getCO2());
 
@@ -210,6 +143,23 @@ void loop()
 
     Serial.println();
 
+    u8x8.clear();
+    u8x8.setCursor(0, 5);
+    u8x8.printf("%ippm", airSensor.getCO2());
+    delay (1500);
+
+    u8x8.clear();
+    u8x8.setCursor(0, 5);
+    u8x8.printf("%.1f", airSensor.getTemperature());
+    u8x8.print("\xb0");
+    u8x8.print("C");
+    delay (1500);
+
+    u8x8.clear();
+    u8x8.setCursor(0, 5);
+    u8x8.printf("%.1f%%rH", airSensor.getHumidity());
+    delay (1500);
+
     // wait for WiFi connection
     if((wifiMulti.run() == WL_CONNECTED))
     {
@@ -219,31 +169,8 @@ void loop()
     }
   }
   else
-    Serial.println("Waiting for new data");
-
-  pre();
-  u8x8.print("CO2:");
-  u8x8.setCursor(0,2);
-  u8x8.print(airSensor.getCO2());
-
-//  u8g2.firstPage();
-//  u8g2.setFont(u8g2_font_ncenB24_tr);
-//  u8g2.drawStr(0,24,"Hello World!");
-  
-  if(airSensor.getCO2() > 1000) { // red
-      digitalWrite(ledPinRed, HIGH);    
-      digitalWrite(ledPinGreen, LOW);
-      digitalWrite(ledPinBlue, LOW);
-  } else if(airSensor.getCO2() > 800) {  // yellow
-      digitalWrite(ledPinRed, HIGH);    
-      digitalWrite(ledPinGreen, HIGH);
-      digitalWrite(ledPinBlue, LOW);
-  } else {  // green
-      digitalWrite(ledPinRed, LOW);    
-      digitalWrite(ledPinGreen, HIGH);
-      digitalWrite(ledPinBlue, LOW);
-  }
-
-  delay(1500);
-
+    {
+      Serial.println("Waiting for new data");
+      delay(1000);
+    }
 }

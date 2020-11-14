@@ -55,7 +55,10 @@ void setup() {
     while (1){};
   }
 
-  wifiMulti.addAP(ssid, wlan_password);
+  if (wifiMulti.addAP(ssid, wlan_password) == false) {
+    Serial.println("WiFi ssid or passwort not correct. Please check wlan_settings.h. Freezing ...");
+    while(true){};
+  }
 
   //The SCD30 has data ready every two seconds
 

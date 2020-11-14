@@ -5,6 +5,8 @@
 User: admin  
 Password: admin
 
+for some obscure reason you might have to refresh after entering credentials once / enter them twice.
+
 ## export datasources yaml
 
 https://github.com/trivago/hamara

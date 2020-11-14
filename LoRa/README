@@ -1,0 +1,47 @@
+Wir haben 2x LoRa Hardware bekommen:
+
+- RFM9x LoRa 868/915MHz: https://www.adafruit.com/product/3072
+- WiFi Lora 32 V2 hat auch LoRa: https://heltec.org/project/wifi-lora-32/
+
+Libs:
+  Ich habe am Freitag Abend die "LoRa" Lib 0.7.2 von Sandeep Mistry
+  aus dem arduino Bibliotheksverwalter ausprobiert, weil sie ca. 800 stars auf github hat.
+
+  Settings für das "WiFi Lora 32 V2" Board:
+    LoRa.setPins(18, 14, 26); // set CS, reset, IRQ pin
+
+  Adafruit listet libs auf:
+  - LowPowerLab's RFM69 Library https://github.com/LowPowerLab/RFM69
+  - AirSpayce's Radiohead library http://www.airspayce.com/mikem/arduino/RadioHead/
+
+  Adafruit empfiehlt im Tutorial die Radiohead lib:
+  von http://www.airspayce.com/mikem/arduino/RadioHead/ das Zip laden und installieren
+
+  Der Treiber für unseren LoRa Chip ist der "RH_RF95"
+
+=== LoRa Server: ESP32 Dev Module (az-delivery) mit Adafruit RFM9x Modul === 
+
+ESP32 WROOM (ohne Display) verdrahtet wie in ../official-files/CO2-Empfänger.JPG zu sehen
+
+https://learn.adafruit.com/adafruit-rfm69hcw-and-rfm96-rfm95-rfm98-lora-packet-padio-breakouts/pinouts
+
+Die Verdrahtung als Text:
+
+G0   - violett - G2
+SCK  - braun   - G18
+MISO - orange  - G19
+MOSI - grau    - G23
+CS   - grün    - G5
+RST  - blau    - G14
+
+#define RFM95_RST     14
+#define RFM95_CS      5
+#define RFM95_INT     2
+
+=== Lora Client: WiFi Lora 32 V2 ===
+
+schon intern verdrahtet:
+
+   CS  - G18
+   RST - G14
+   IRQ - G26

@@ -32,8 +32,13 @@
 #include <WiFiMulti.h>
 
 #include <HTTPClient.h>
-const char* ssid = "DpfyMAq4";
-#include "wlan_password.h"
+#include "wlan_settings.h"
+
+#include "uuids.h"
+
+const int ledPinRed = 17; 
+const int ledPinGreen = 12; 
+const int ledPinBlue = 13; 
 
 #include "SparkFun_SCD30_Arduino_Library.h" //Click here to get the library: http://librarymanager/All#SparkFun_SCD30
 SCD30 airSensor;
@@ -61,6 +66,9 @@ void setup()
 
   // We start by connecting to a WiFi network
 
+  pinMode(ledPinRed, OUTPUT);
+  pinMode(ledPinGreen, OUTPUT);
+  pinMode(ledPinBlue, OUTPUT);
 
 }
 
@@ -96,6 +104,7 @@ void push_volkszaehler (const char* UUID, float value)
     }
 
   http.end();
+
 }
 
 void loop()
@@ -116,13 +125,28 @@ void loop()
     // wait for WiFi connection
     if((wifiMulti.run() == WL_CONNECTED))
     {
-      push_volkszaehler ("c1395870-25f6-11eb-9fc9-37a6fcdfe7d3", airSensor.getCO2());
-      push_volkszaehler ("d9f3a1c0-25ff-11eb-ba27-4d0a31ced83f", airSensor.getTemperature());
-      push_volkszaehler ("efdc1a80-25ff-11eb-9a66-950175c1511f", airSensor.getHumidity());
+      push_volkszaehler (uuid_co2, airSensor.getCO2());
+      push_volkszaehler (uuid_temp, airSensor.getTemperature());
+      push_volkszaehler (uuid_humidity, airSensor.getHumidity());
     }
   }
   else
     Serial.println("Waiting for new data");
 
+  if(airSensor.getCO2() > 1000) { // red
+      digitalWrite(ledPinRed, HIGH);    
+      digitalWrite(ledPinGreen, LOW);
+      digitalWrite(ledPinBlue, LOW);
+  } else if(airSensor.getCO2() > 800) {  // yellow
+      digitalWrite(ledPinRed, HIGH);    
+      digitalWrite(ledPinGreen, HIGH);
+      digitalWrite(ledPinBlue, LOW);
+  } else {  // green
+      digitalWrite(ledPinRed, LOW);    
+      digitalWrite(ledPinGreen, HIGH);
+      digitalWrite(ledPinBlue, LOW);
+  }
+
   delay(1500);
+
 }

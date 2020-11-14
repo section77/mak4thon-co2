@@ -1,5 +1,10 @@
 # Grafana Dashboard with influxDB
 
+# default login
+
+User: admin  
+Password: admin
+
 ## export datasources yaml
 
 https://github.com/trivago/hamara
@@ -24,6 +29,12 @@ cat provisioning/datasources/all.yml
 # influxdb
 
 time series is measured in ns by default. Normal unixtimestamp * 1000000000
+
+Initial setup of db:
+
+```
+$ curl -G http://localhost:8086/query --data-urlencode "q=CREATE DATABASE co2"
+```
 
 # updating dashboards
 

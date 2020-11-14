@@ -5,16 +5,46 @@ services:
   # form of an image.
   #
   # This could instead be a volume-mounted container.
-  dockercompose-influxdb-grafana:
-    build: './grafana'
-    container_name: dockercompose-influxdb-grafana
+  grafana:
+    build:
+      context: grafana
+      dockerfile: Dockerfile
+      args:
+        GRAFANA_TAG: grafana:7.2.1-ubuntu
+    container_name: grafana
     ports:
-      - '3003:3003'
-      - '3004:8083'
-      - '8086:8086'
-    volumes:
-      - 'data:/var/lib/influxdb'
-      - 'data:/var/lib/grafana'
-    image: 'philhawthorne/docker-influxdb-grafana:latest'
-volumes:
-    data:
+      - '3000:3000'
+#    volumes:
+#      - './docker-data/grafana:/var/lib/grafana'
+    image: 'grafana/grafana:7.2.1-ubuntu'
+  influxdb:
+      # Full tag list: https://hub.docker.com/r/library/influxdb/tags/
+      build:
+        context: influxdb
+        dockerfile: Dockerfile
+        args:
+          INFLUXDB_TAG: influxdb:latest
+      image: "influxdb"
+      container_name: influxdb
+      volumes:
+        # Mount for influxdb data directory
+        - ./docker-data/influxdb:/var/lib/influxdb
+        # Mount for influxdb configuration
+        #- config/:/etc/influxdb/
+      ports:
+        # The API for InfluxDB is served on port 8086
+        - "8086:8086"
+        - "8082:8082"
+        # UDP Port
+        - "8089:8089/udp"
+  poll-volkszaehler:
+    build:
+      context: poll-volkszaehler
+      dockerfile: Dockerfile
+    ports:
+      - 9001:9001 # Access GUI with http://localhost:9001/
+#    volumes:
+#      - .:/volkszaehler:cached
+#volumes:
+#    ./grafana:
+#    ./influxdb:

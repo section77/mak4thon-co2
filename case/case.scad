@@ -32,7 +32,7 @@ usb_y=-21;
 usb_z=-10;
 
 // LED
-led_diameter=6;
+led_diameter=5;
 led_x=0;
 led_y=0;
 led_z=height/2-wall/2;

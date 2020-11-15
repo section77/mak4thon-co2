@@ -197,11 +197,11 @@ void loop()
       float humidity = airSensor.getHumidity();
       float temperature = airSensor.getTemperature();
 
-      if(co2 > 1000) { // red
+      if(co2 > 1550) { // red
           digitalWrite(ledPinRed, HIGH);
           digitalWrite(ledPinGreen, LOW);
           digitalWrite(ledPinBlue, LOW);
-      } else if(co2 > 800) {  // yellow
+      } else if(co2 > 550) {  // yellow
           digitalWrite(ledPinRed, HIGH);
           digitalWrite(ledPinGreen, HIGH);
           digitalWrite(ledPinBlue, LOW);
@@ -221,7 +221,7 @@ void loop()
       Serial.print(humidity, 1);
 
       Serial.println();
-
+d
       pre ();
       u8x8.printf("%ippm", co2);
       push_value (uuid_co2, co2);

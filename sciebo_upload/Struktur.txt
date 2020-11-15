@@ -44,6 +44,11 @@ Die LoRa-WiFi-Bridge nimmt in dem Fall die Werte über LoRa entgegen und gibt di
 
 === Grafana ===
 
-Please fix me
+Mittels Grafana lassen sich die Messwerte sehr anschaulich visualisieren. Die Werte können als Momentanwerte
+oder als zeitlicher Verlauf dargestellt werden. Grafana lässt sich auf einem normalen PC im Browser nutzen oder
+auch auf einem Tablet oder Smartphone.
 
-docker compose yaml
+Grafana bezieht die Daten aus volkszaehler.org und stellt diese dann dar. 
+
+Die Installation von Grafana kann auch einem PC oder einem Server erfolgen. Die hierfür benötigten Dateien befinden
+sich im Unterordner Visualisierung.

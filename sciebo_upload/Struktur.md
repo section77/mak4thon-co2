@@ -1,4 +1,4 @@
-=== Klassenzimmer Module ===
+## Klassenzimmer Module
 
 Hardware:
   - Heltec WiFi Lora 32 V2 mit OLED
@@ -13,7 +13,7 @@ Funktion:
   Digitale Werte über WiFi nach volkszaehler.org schreiben oder über LoRa
   an eine LoRa-Wifi-Bridge senden.
 
-=== LoRa-WiFi-Bridge ===
+## LoRa-WiFi-Bridg
 
 Hardware:
   - ESP32 WROOM32
@@ -22,7 +22,7 @@ Hardware:
 Funktion:
   Werte über LoRa entgegennehmen und über WiFi weiterleiten
 
-=== volkszaehler.org ===
+## volkszaehler.org
 
 Beispiel:
   https://demo.volkszaehler.org/?uuid[]=8ddf8520-2601-11eb-b279-b5ad6e30b118%40middleware.php
@@ -32,7 +32,7 @@ Beispiel:
 - Ursprünglich für Smartmeter (Stromverbrauch, Heizung usw.) gedacht
 - keine Anmeldung, Schreib- und Lesezugriff erfolgt über UUIDs
 
-=== Datenfluss ===
+## Datenfluss
 
 Die Klassenzimmermodule erfassen die Temperatur, Luftfeuchtigkeit und CO2 Konzentration.
 Grenzwertüberschreitungen werden an der RGB LED angezeigt, zudem alle Werte auf dem OLED dargestellt.
@@ -42,7 +42,7 @@ Besteht keine Verbindung, so werden die Werte über LoRa gesendet.
 
 Die LoRa-WiFi-Bridge nimmt in dem Fall die Werte über LoRa entgegen und gibt diese über http weiter
 
-=== Grafana ===
+## Grafana
 
 Mittels Grafana lassen sich die Messwerte sehr anschaulich visualisieren. Die Werte können als Momentanwerte
 oder als zeitlicher Verlauf dargestellt werden. Grafana lässt sich auf einem normalen PC im Browser nutzen oder

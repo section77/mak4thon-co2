@@ -221,7 +221,7 @@ void loop()
       Serial.print(humidity, 1);
 
       Serial.println();
-d
+
       pre ();
       u8x8.printf("%ippm", co2);
       push_value (uuid_co2, co2);

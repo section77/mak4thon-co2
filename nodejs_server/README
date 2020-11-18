@@ -1,0 +1,16 @@
+Beispiel Server um von CO2-api mit USE_NEW_POST_JSON Werte entgegen
+zu nehmen und in sqlite db speichern.
+
+# Bootstrapping
+
+npm install
+node create_db.js
+node server.js
+
+API-Usage wird dann im Browser http://localhost:3000/ erklärt
+
+# Disclaimer
+Achtung, darf noch nicht produktiv eingesetzt werden:
+- POST-Values werden noch nicht alle escaped
+- Keinerlei Error-Handling für HTTP- oder SQLite3-Errors
+- POST-Values müssen validiert werden (mindestens Vollständigkeit und Datentyp)

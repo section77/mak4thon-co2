@@ -1,9 +1,0 @@
-/*
- * Wir haben für euch zum testen eine Gruppe auf volkszaehler.org eingerichtet:
- * https://demo.volkszaehler.org/?uuid[]=7cec22c0-272f-11eb-a96a-5d7437c06710%40middleware.php
- * Die uuids dazu sind bereits hier eingetragen
- */
-
-const char* uuid_co2 = "f86101e0-272e-11eb-8fbe-c5aa810c8f30";
-const char* uuid_temp = "295b5b10-272f-11eb-87b0-85ffe228ab0a";
-const char* uuid_humidity = "104d24b0-272f-11eb-845e-7ffa23212aea";

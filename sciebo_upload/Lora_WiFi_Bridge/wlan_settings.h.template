@@ -1,3 +1,0 @@
-// Hier bitte WLAN SSID und Passwort eintragen
-const char* ssid = "<wlan-ssid>";
-const char* wlan_password = "<wlan-password>";

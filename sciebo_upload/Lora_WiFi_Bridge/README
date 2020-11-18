@@ -1,5 +1,0 @@
-Software für die Lora-Wifi Brücke (nur einmal, benötigt WLAN Zugang)
-
-Konfiguration:
-  Siehe auch den Header der .ino
-  Die zwei .h.template kopieren, in .h umbenennen und die Zugangsdaten eintragen.

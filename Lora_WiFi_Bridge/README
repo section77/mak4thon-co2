@@ -1,0 +1,10 @@
+Software für die Lora-Wifi Brücke (nur einmal, benötigt WLAN Zugang)
+
+Siehe auch den Header von Lora_WiFi_Bridge.ino
+
+Konfiguration:
+  Siehe auch den Header der .ino
+  Die zwei .h.template kopieren, in .h umbenennen und die Zugangsdaten eintragen.
+
+Verdrahtung:
+  ../doc/CO2-Empfänger.jpg

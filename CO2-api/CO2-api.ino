@@ -18,6 +18,10 @@
  *  - Radiohead für LoRa (Zip Download, installieren) http://www.airspayce.com/mikem/arduino/RadioHead/
  */
 
+#define USE_VOLKSZAEHLER
+//#define USE_NEW_POST_JSON
+//#define USE_LORA
+
 #include <Arduino.h>
 #include <U8x8lib.h>
 
@@ -34,11 +38,16 @@
 #include <WiFi.h>
 #include <WiFiMulti.h>
 
-#include <RH_RF95.h>
+#ifdef USE_LORA
+  #include <RH_RF95.h>
+  RH_RF95 rf95(18, 26); // WiFi Lora 32 V2 (integriert)
+#endif
 
 #include <HTTPClient.h>
 #include "wlan_settings.h"
 #include "uuids.h"
+
+const char *module_token = "698432a1-c6e3-489e-8602-b26601a8dff1";
 
 #include "SparkFun_SCD30_Arduino_Library.h" //Click here to get the library: http://librarymanager/All#SparkFun_SCD30
 SCD30 airSensor;
@@ -52,7 +61,7 @@ const int ledPinBlue = 13;
 
 U8X8_SSD1306_128X64_NONAME_SW_I2C u8x8(/* clock=*/ 15, /* data=*/ 4, /* reset=*/ 16);
 
-RH_RF95 rf95(18, 26); // WiFi Lora 32 V2 (integriert)
+HTTPClient http;
 
 void setup()
 {
@@ -96,6 +105,7 @@ void setup()
   u8x8.begin();
   u8x8.setFont(u8x8_font_courB18_2x3_f);
 
+#ifdef USE_LORA
   // LoRa
   if (!rf95.init())
     Serial.println("init failed");
@@ -113,12 +123,49 @@ void setup()
   // then you can configure the power transmitter power for 0 to 15 dBm and with useRFO true.
   // Failure to do that will result in extremely low transmit powers.
   //  rf95.setTxPower(14, true);
+#endif
+
+  // allow reuse (if server supports it)
+  http.setReuse(true);
 }
 
+void build_JSON (char *buf, size_t buflen, const char *token, uint16_t co2, float temperature, float humidity)
+{
+  snprintf (buf, buflen, "{\"token\":\"%s\",\"co2\":%u,\"temperature\":%.2f,\"humidity\":%.2f}", token, co2, temperature, humidity);
+  buf[buflen - 1] = '\0';
+}
+
+uint8_t http_POST (const char *host, uint16_t port, const char *uri, const char *json)
+{
+  uint8_t ret = 0;
+  http.begin(host, port, uri);
+
+  // über www-form-urlencoded wäre auch möglich
+  //http.addHeader("Content-Type", "application/x-www-form-urlencoded");
+  //int httpCode = http.POST("token=555&co2=1234&temperature=24.5&humidity=44.5");
+
+  http.addHeader("Content-Type", "application/json");
+
+
+  int httpCode = http.POST(json);
+  if(httpCode > 0)
+    {
+      // HTTP header has been send and Server response header has been handled
+      // Serial.printf("[HTTP] POST... code: %d\n", httpCode);
+    }
+  else
+    {
+      Serial.printf("[HTTP] POST failed, error: %s\n", http.errorToString(httpCode).c_str());
+      ret = -1;
+    }
+  http.end();
+  return ret;
+}
+
+#ifdef USE_VOLKSZAEHLER
 uint8_t push_http (const char* url, const char* UUID, float value)
 {
   uint8_t ret = 0;
-  HTTPClient http;
 
   char buf[300];
   snprintf (buf, 300, "%s%s.json?operation=add&value=%.2f", url, UUID, value);
@@ -136,7 +183,7 @@ uint8_t push_http (const char* url, const char* UUID, float value)
         //Serial.printf("[HTTP] GET... code: %d\n", httpCode);
 
         if(httpCode == HTTP_CODE_OK)
-          Serial.println("sent value via http");
+          ;//Serial.println("sent value via http");
         else
           ret = -1;
     }
@@ -148,7 +195,9 @@ uint8_t push_http (const char* url, const char* UUID, float value)
   http.end();
   return ret;
 }
+#endif
 
+#ifdef USE_LORA
 void push_LoRa (const char* UUID, float value)
 {
   // Messwert an die LoRa-WiFi-Bridge senden
@@ -159,12 +208,14 @@ void push_LoRa (const char* UUID, float value)
   // Wir erwarten keine Antwort von der LoRa_WiFi_Bridge
   Serial.println("sent value via LoRa");
 }
+#endif
 
 void push_value (const char* UUID, float value)
 {
   // Debugging: Send to host in LAN
   // push_http ("http://192.168.10.116:8888", UUID, value);
 
+#ifdef USE_VOLKSZAEHLER
   if(WiFi.status() == WL_CONNECTED)
     {
       if (push_http ("http://demo.volkszaehler.org/middleware/data/", UUID, value))
@@ -174,7 +225,12 @@ void push_value (const char* UUID, float value)
         }
     }
   else
+#endif
+#ifdef USE_LORA
     push_LoRa (UUID, value);
+#else
+    ;
+#endif
 }
 
 void pre ()
@@ -238,6 +294,14 @@ void loop()
       u8x8.printf("%.1f%%rH", humidity);
       push_value (uuid_humidity, humidity);
       delay (1000);
+
+#ifdef USE_NEW_POST_JSON
+      #define BUF_SIZE 200
+      char buf[BUF_SIZE];
+      build_JSON (buf, BUF_SIZE, module_token, co2, temperature, humidity);
+      http_POST ("192.168.10.116", 3000, "/addSample", buf);
+#endif
+
     }
   else
     {

@@ -1,8 +1,6 @@
-# Our submission to "4. Open Photonik Pro Make@thon"
+# Klassenzimmer Modul
 
-# Klassenzimmer Module
-
-[Klassenzimmer Module](docs/Klassenzimmermodul.jpg)
+![Klassenzimmer Modul](docs/Klassenzimmermodul.jpg)
 
 ## Hardware:
 - Heltec WiFi Lora 32 V2 mit OLED
@@ -27,8 +25,6 @@
 
 # volkszaehler.org
 
-[Ein echtes Beispiel: https://demo.volkszaehler.org/?uuid[]=8ddf8520-2601-11eb-b279-b5ad6e30b118%40middleware.php](https://demo.volkszaehler.org/?uuid[]=8ddf8520-2601-11eb-b279-b5ad6e30b118%40middleware.php)
-
 - Von einem Teammitglied betrieben
 - freie Software, kann auch z.B. auf einem RPi betrieben werden
 - Ursprünglich für Smartmeter (Stromverbrauch, Heizung usw.) gedacht
@@ -36,7 +32,7 @@
 
 # Datenfluss
 
-[Struktur](docs/Struktur.jpg)
+![Struktur](docs/Struktur.jpg)
 
 Die Klassenzimmermodule erfassen die Temperatur, Luftfeuchtigkeit und CO2 Konzentration.
 Grenzwertüberschreitungen werden an der RGB LED angezeigt, zudem alle Werte auf dem OLED dargestellt.
@@ -47,6 +43,8 @@ Besteht keine Verbindung, so werden die Werte über LoRa gesendet.
 Die LoRa-WiFi-Bridge nimmt in dem Fall die Werte über LoRa entgegen und gibt diese über http weiter
 
 # Grafana Docker Setup
+
+![Grafana auf dem Smartphone](docs/Grafana_Handy.png);
 
 Mittels Grafana lassen sich die Messwerte sehr anschaulich visualisieren. Die Werte können als Momentanwerte
 oder als zeitlicher Verlauf dargestellt werden. Grafana lässt sich auf einem normalen PC im Browser nutzen oder
@@ -98,3 +96,21 @@ Autoren: Anne Hartmann, Martin Kriegel
 Technische Universität Berlin, Hermann-Rietschel-Institut
 DOI: http://dx.doi.org/10.14279/depositonce-10361
 
+# Weitere Ideen, die es nicht in den Prototypen geschafft haben
+
+## Gehäuse
+- Halterungen für die Bauteile (im Prototyp nur geklebt)
+- kompakter durch passende Leitungslängen oder Platine
+- Gehäuse für die LoRa-Wifi-Bridge
+- für Grundschulen eine andere Gehäusevariante: Ein 3D gedrucktes Haus mit Fenster. Ein Servo öffnet die Fenster bei überschreiten des Grenzwerts (anstelle einer roten LED)
+
+## Elektronik
+- Einbau eines LiPo-Akkus → mobiler Betrieb; Controller hat schon Laderegler integriert
+
+## Software
+- ESPs in den Klassenräumen:
+  * Lineare Regression über die letzten 5min C02 Werte um die voraussichtliche Zeit bis zum Überschreiten des Grenzwertes zu berechnen.
+  * Abfallen der CO2 Konzentration erkennen und den asymptotischen Verlauf erkennen. Empfehlung zum Schließen der Fenster geben, wenn Änderungsrate unter Schwellwert fällt. Hintergrund Energiesparen, nur so lange Lüften wie auch Sinn macht.
+
+## Rollout
+- automatische Erzeugung von UUIDs, die das Flashen mit identischen Binaries erlaubt (vzero?)

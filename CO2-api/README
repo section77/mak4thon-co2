@@ -9,3 +9,7 @@ Konfiguration:
 
 Verdrahtung:
   ../doc/CO2_Sender_ESP32_LoRa.pdf
+
+Links:
+  Heltec repo mit Schaltplänen PinoutDiagram usw. -> Sehr zu empfehlen
+  https://github.com/Heltec-Aaron-Lee/WiFi_Kit_series.git

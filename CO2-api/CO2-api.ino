@@ -18,8 +18,8 @@
  *  - Radiohead für LoRa (Zip Download, installieren) http://www.airspayce.com/mikem/arduino/RadioHead/
  */
 
-#define USE_VOLKSZAEHLER
-//#define USE_NEW_POST_JSON
+//#define USE_VOLKSZAEHLER
+#define USE_NEW_POST_JSON
 //#define USE_LORA
 
 #include <Arduino.h>
@@ -221,7 +221,9 @@ void push_value (const char* UUID, float value)
       if (push_http ("http://demo.volkszaehler.org/middleware/data/", UUID, value))
         {
           Serial.println("http failed, fallback to LoRa");
+#ifdef USE_LORA
           push_LoRa (UUID, value);
+#endif
         }
     }
   else
@@ -299,7 +301,7 @@ void loop()
       #define BUF_SIZE 200
       char buf[BUF_SIZE];
       build_JSON (buf, BUF_SIZE, module_token, co2, temperature, humidity);
-      http_POST ("192.168.10.116", 3000, "/addSample", buf);
+      http_POST ("192.168.10.116", 4000, "/addSample", buf);
 #endif
 
     }

@@ -7,9 +7,9 @@ deleteDatasources:
 datasources:
 - orgId: 1
   version: 1
-  name: InfluxDB-docker
+  name: InfluxDB
   type: influxdb
   access: proxy
   url: http://influxdb:8086/
-  database: co2
+  database: sample_school
   isDefault: true

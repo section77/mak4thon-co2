@@ -11,7 +11,7 @@ const database_name = 'sample_school';
 
 const Influx = require('influx');
 const db = new Influx.InfluxDB({
-  host: 'localhost',
+  host: 'influxdb',
   database: database_name,
   schema: [
     {
@@ -29,23 +29,38 @@ const db = new Influx.InfluxDB({
   ]
 })
 
-db.getDatabaseNames()
-  .then(names => {
-    console.log ({names});
-    if (!names.includes(database_name)) {
-      console.log ('creating new database', database_name);
-      return db.createDatabase(database_name);
-    }
-  })
-  .then(() => {
-    app.listen(port, () => {
-        console.log(`Example app listening at http://localhost:${port}`);
+var connected = false;
+setInterval (function (){
+  if (! connected) {
+    db.ping(5000).then(hosts => {
+      hosts.forEach(host => {
+        if (host.online) {
+          console.log(`${host.url.host} responded in ${host.rtt}ms running ${host.version})`)
+          db.getDatabaseNames()
+            .then(names => {
+              console.log ({names});
+              connected = true;
+              if (!names.includes(database_name)) {
+                console.log ('creating new database', database_name);
+                return db.createDatabase(database_name);
+              }
+            })
+            .then(() => {
+              app.listen(port, () => {
+                  console.log(`Example app listening at http://localhost:${port}`);
+              })
+            })
+            .catch(err => {
+              console.log({err});
+              console.error(`Error creating Influx database!`);
+            })
+        } else {
+          console.log(`${host.url.host} is offline :(`)
+        }
+      })
     })
-  })
-  .catch(err => {
-    console.log({err});
-    console.error(`Error creating Influx database!`);
-  })
+  }
+}, 1000)
 
 app.post('/addSample', (req, res) => {
 

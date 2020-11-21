@@ -1,0 +1,9 @@
+=== LoRaWAN
+  
+  https://github.com/mcci-catena/arduino-lmic
+  https://www.hackster.io/pulsartronic/lorawan-gateway-esp8266-rfm95-arduino-4914a8   code auf https://github.com/pulsartronic/LoRaWANGatewaySC
+  https://github.com/things4u/ESP-1ch-Gateway
+  https://randomnerdtutorials.com/esp32-lora-rfm95-transceiver-arduino-ide/
+
+  RPi Hat: https://m2m-tele.com/product/lorawan-gateway-raspberry-shield-gw-01-rpi/
+  Günstiges Outdoor Teil: https://www.thethingsnetwork.org/community/berlin/post/very-affordable-and-new-lorawan-gateway-to-go-mikrotik-ltap-mikrotik-ltap-lr8-lte-kit-rbltap-2hndr11e-ltelr8

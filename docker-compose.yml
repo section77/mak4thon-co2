@@ -1,4 +1,7 @@
 version: '3.3'
+volumes:
+  influxdb-storage:
+  grafana-storage:
 services:
   # The grafana container uses the image resulting from the build
   # of `./grafana` which simply packs some configuration into the
@@ -10,11 +13,14 @@ services:
       context: grafana
       dockerfile: Dockerfile
       args:
-        GRAFANA_TAG: grafana:7.2.1-ubuntu
+        GRAFANA_TAG: grafana:7.3.3
     container_name: grafana
+    volumes:
+      # docker volume create air_monitoring_storage
+      - grafana-storage:/var/lib/grafana
+      - ./grafana/provisioning/:/etc/grafana/provisioning/
     ports:
       - '3000:3000'
-    image: 'grafana/grafana:7.2.1-ubuntu'
     depends_on:
       - "nodejs_to_influxdb"
   influxdb:
@@ -24,13 +30,9 @@ services:
       dockerfile: Dockerfile
       args:
         INFLUXDB_TAG: influxdb:1.8.3
-    image: "influxdb"
     container_name: influxdb
     volumes:
-      # Mount for influxdb data directory
-      - ./influxdb:/var/lib/influxdb
-      # Mount for influxdb configuration
-      #- config/:/etc/influxdb/
+      - influxdb-storage:/var/lib/influxdb
     ports:
       # The API for InfluxDB is served on port 8086
       - "8086:8086"
@@ -41,7 +43,6 @@ services:
     build:
       context: nodejs_to_influxdb
       dockerfile: Dockerfile
-    image: "nodejs_to_influxdb"
     container_name: nodejs_to_influxdb
     ports:
       - 4000:4000

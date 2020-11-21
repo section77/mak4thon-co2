@@ -46,8 +46,7 @@
 #include <HTTPClient.h>
 #include "wlan_settings.h"
 #include "uuids.h"
-
-const char *module_token = "698432a1-c6e3-489e-8602-b26601a8dff1";
+#include "module_token.h"
 
 #include "SparkFun_SCD30_Arduino_Library.h" //Click here to get the library: http://librarymanager/All#SparkFun_SCD30
 SCD30 airSensor;
@@ -67,6 +66,11 @@ void setup()
 {
   Serial.begin(115200);
   Serial.println("CO2-api: Luftqualität messen, anzeigen und über Wifi oder LoRa weitergeben");
+
+  // FIXME: Aus Sicherheitsgründen würde ich später nur die module_id auf Display und über Serial ausgeben
+  Serial.printf("module_token = '%s'\n", module_token);
+  Serial.printf("module_id = '%s'\n", module_id);
+
   Wire.begin();
 
   if (airSensor.begin() == false)
@@ -104,6 +108,17 @@ void setup()
   // OLED
   u8x8.begin();
   u8x8.setFont(u8x8_font_courB18_2x3_f);
+
+  // Maximal 8 Zeichen module_id ausgeben
+  {
+    u8x8.setCursor(0, 2);
+    // nach 8 Zeichen abschneiden
+    #define MAX_ID_LEN 8
+    char tmp_mod_id[MAX_ID_LEN + 1];
+    strncpy (tmp_mod_id, module_id, MAX_ID_LEN);
+    tmp_mod_id[MAX_ID_LEN] = '\0';
+    u8x8.print(tmp_mod_id);
+  }
 
 #ifdef USE_LORA
   // LoRa
@@ -237,12 +252,12 @@ void push_value (const char* UUID, float value)
 
 void pre ()
 {
-  u8x8.clear();
-  u8x8.setCursor(0, 2);
-  if (WiFi.status() == WL_CONNECTED)
-    u8x8.print("WiFi");
-  else
-    u8x8.print("LoRa");
+//  u8x8.clear();
+//  u8x8.setCursor(0, 2);
+//  if (WiFi.status() == WL_CONNECTED)
+//    u8x8.print("WiFi");
+//  else
+//    u8x8.print("LoRa");
 
   u8x8.setCursor(0, 5);
 }
@@ -281,14 +296,14 @@ void loop()
       Serial.println();
 
       pre ();
-      u8x8.printf("%ippm", co2);
+      u8x8.printf("%ippm ", co2);
       push_value (uuid_co2, co2);
       delay (1000);
 
       pre ();
       u8x8.printf("%.1f", temperature);
       u8x8.print("\xb0");
-      u8x8.print("C");
+      u8x8.print("C ");
       push_value (uuid_temp, temperature);
       delay (1000);
 

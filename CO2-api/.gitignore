@@ -1,2 +1,4 @@
 wlan_settings.h
 uuids.h
+mapping.json
+module_token.h

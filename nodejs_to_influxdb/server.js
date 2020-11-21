@@ -23,7 +23,7 @@ const db = new Influx.InfluxDB({
         humidity: Influx.FieldType.FLOAT
       },
       tags: [
-        'token'
+        'token', 'id'
       ]
     }
   ]
@@ -66,10 +66,12 @@ app.post('/addSample', (req, res) => {
 
     const entry = {
         measurement: 'indoor_air_quality',
-        tags: { token: req.body.token },
+        tags: { token: req.body.token,
+                id: req.body.id },
         fields: req.body
         };
     delete entry.fields.token;
+    delete entry.fields.id;
 
     console.log(req.path, entry);
 

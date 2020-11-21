@@ -144,9 +144,9 @@ void setup()
   http.setReuse(true);
 }
 
-void build_JSON (char *buf, size_t buflen, const char *token, uint16_t co2, float temperature, float humidity)
+void build_JSON (char *buf, size_t buflen, uint16_t co2, float temperature, float humidity)
 {
-  snprintf (buf, buflen, "{\"token\":\"%s\",\"co2\":%u,\"temperature\":%.2f,\"humidity\":%.2f}", token, co2, temperature, humidity);
+  snprintf (buf, buflen, "{\"token\":\"%s\",\"id\":\"%s\",\"co2\":%u,\"temperature\":%.2f,\"humidity\":%.2f}", module_token, module_id, co2, temperature, humidity);
   buf[buflen - 1] = '\0';
 }
 
@@ -315,7 +315,7 @@ void loop()
 #ifdef USE_NEW_POST_JSON
       #define BUF_SIZE 200
       char buf[BUF_SIZE];
-      build_JSON (buf, BUF_SIZE, module_token, co2, temperature, humidity);
+      build_JSON (buf, BUF_SIZE, co2, temperature, humidity);
       http_POST ("192.168.10.116", 4000, "/addSample", buf);
 #endif
 

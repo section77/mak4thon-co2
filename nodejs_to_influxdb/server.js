@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const port = 4000;
 const os = require('os')
+const fs = require('fs');
 
 var bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -62,24 +63,35 @@ setInterval (function (){
   }
 }, 1000)
 
+const token_mapping_raw = fs.readFileSync('mapping.json');
+var token_mapping = JSON.parse(token_mapping_raw);
+console.log(token_mapping_raw);
+
 app.post('/addSample', (req, res) => {
+  const t = req.body.token;
+  if (token_mapping.map((ele) => ele.token).includes(t))
+    {
+      const entry = {
+          measurement: 'indoor_air_quality',
+          tags: { token: t,
+                  id: req.body.id },
+          fields: req.body
+          };
+      delete entry.fields.token;
+      delete entry.fields.id;
 
-    const entry = {
-        measurement: 'indoor_air_quality',
-        tags: { token: req.body.token,
-                id: req.body.id },
-        fields: req.body
-        };
-    delete entry.fields.token;
-    delete entry.fields.id;
+      console.log(req.path, entry);
 
-    console.log(req.path, entry);
-
-    db.writePoints([entry]).catch(err => {
-      console.error(`Error saving data to InfluxDB! ${err.stack}`)
-    })
-
-    res.send('ok');
+      db.writePoints([entry]).catch(err => {
+        console.error(`Error saving data to InfluxDB! ${err.stack}`)
+      })
+      res.send('ok');
+    }
+  else
+    {
+      console.log ('Reject token', t); 
+      res.sendStatus(403);
+    }
 });
 
 app.get('/', function (req, res) {

@@ -35,10 +35,8 @@ services:
     volumes:
       - influxdb-storage:/var/lib/influxdb
     ports:
-      # The API for InfluxDB is served on port 8086
-      - "8086:8086"
-      #- "8082:8082"
-      # UDP Port
+      # 8086 ist nur innerhalb des containers sichtbar (kein HOST_PORT)
+      - "8086"
       #- "8089:8089/udp"
   nodejs_to_influxdb:
     build:

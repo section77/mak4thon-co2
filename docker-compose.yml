@@ -19,6 +19,7 @@ services:
       # docker volume create air_monitoring_storage
       - grafana-storage:/var/lib/grafana
       - ./grafana/provisioning/:/etc/grafana/provisioning/
+      - ./grafana/dashboards/:/var/lib/grafana/dashboards/
     ports:
       - '3000:3000'
     depends_on:

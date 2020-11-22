@@ -45,8 +45,8 @@
 #include <WiFiMulti.h>
 
 #ifdef USE_LORA
-  #include <RH_RF95.h>
-  RH_RF95 rf95(18, 26); // WiFi Lora 32 V2 (integriert)
+#include <RH_RF95.h>
+RH_RF95 rf95(18, 26); // WiFi Lora 32 V2 (integriert)
 #endif
 
 #include <HTTPClient.h>
@@ -55,17 +55,17 @@
 #include "module_token.h"
 
 #ifdef USE_SCD30
-  #include "SparkFun_SCD30_Arduino_Library.h" //Click here to get the library: http://librarymanager/All#SparkFun_SCD30
-  SCD30 airSensor;
+#include "SparkFun_SCD30_Arduino_Library.h" //Click here to get the library: http://librarymanager/All#SparkFun_SCD30
+SCD30 airSensor;
 #endif
 
 #ifdef USE_MHZ19
-  #include "MHZ19.h"
-  MHZ19 airSensor;
-  HardwareSerial mySerial(1);
-  #define RX_PIN 36
-  #define TX_PIN 2
-  #define BAUDRATE 9600
+#include "MHZ19.h"
+MHZ19 airSensor;
+HardwareSerial mySerial(1);
+#define RX_PIN 36
+#define TX_PIN 2
+#define BAUDRATE 9600
 #endif
 
 WiFiClient client;
@@ -92,18 +92,18 @@ void setup()
 
 #ifdef USE_SCD30
   if (airSensor.begin() == false)
-  {
-    Serial.println("Air sensor not detected. Please check wiring. Freezing...");
-    while (1)
-      ;
-  }
+    {
+      Serial.println("Air sensor not detected. Please check wiring. Freezing...");
+      while (1)
+        ;
+    }
 #endif
 #ifdef USE_MHZ19
   mySerial.begin(BAUDRATE, SERIAL_8N1, RX_PIN, TX_PIN);
   airSensor.begin(mySerial);
-  airSensor.autoCalibration(); //auto calibration ON  
+  airSensor.autoCalibration(); //auto calibration ON
 #endif
-  
+
   Serial.println("init WiFi network");
   WiFi.begin(ssid, wlan_password);
   Serial.println("Connecting to ");
@@ -111,10 +111,11 @@ void setup()
   Serial.println(String(ssid));
   Serial.println("MAC: " + WiFi.macAddress());
   uint8_t max_wifi_retry = 10;  // entspricht 5s
-  while (WiFi.status() != WL_CONNECTED && --max_wifi_retry) {
-    delay(500);
-    Serial.print(".");
-  }
+  while (WiFi.status() != WL_CONNECTED && --max_wifi_retry)
+    {
+      delay(500);
+      Serial.print(".");
+    }
   if (max_wifi_retry)
     {
       Serial.println("");
@@ -137,7 +138,7 @@ void setup()
   {
     u8x8.setCursor(0, 2);
     // nach 8 Zeichen abschneiden
-    #define MAX_ID_LEN 8
+#define MAX_ID_LEN 8
     char tmp_mod_id[MAX_ID_LEN + 1];
     strncpy (tmp_mod_id, module_id, MAX_ID_LEN);
     tmp_mod_id[MAX_ID_LEN] = '\0';
@@ -218,13 +219,13 @@ uint8_t push_http (const char* url, const char* UUID, float value)
   // httpCode will be negative on error
   if(httpCode > 0)
     {
-        // HTTP header has been send and Server response header has been handled
-        //Serial.printf("[HTTP] GET... code: %d\n", httpCode);
+      // HTTP header has been send and Server response header has been handled
+      //Serial.printf("[HTTP] GET... code: %d\n", httpCode);
 
-        if(httpCode == HTTP_CODE_OK)
-          ;//Serial.println("sent value via http");
-        else
-          ret = -1;
+      if(httpCode == HTTP_CODE_OK)
+        ;//Serial.println("sent value via http");
+      else
+        ret = -1;
     }
   else
     {
@@ -299,19 +300,24 @@ void loop()
       humidity = airSensor.getHumidity();
 #endif
 
-      if(co2 > 1550) { // red Nico hat 2000 daraus gemacht
+      if(co2 > 1550)   // red Nico hat 2000 daraus gemacht
+        {
           digitalWrite(ledPinRed, HIGH);
           digitalWrite(ledPinGreen, LOW);
           digitalWrite(ledPinBlue, LOW);
-      } else if(co2 > 550) {  // yellow Nico hat 1500 daraus gemacht
+        }
+      else if(co2 > 550)      // yellow Nico hat 1500 daraus gemacht
+        {
           digitalWrite(ledPinRed, HIGH);
           digitalWrite(ledPinGreen, HIGH);
           digitalWrite(ledPinBlue, LOW);
-      } else {  // green
+        }
+      else      // green
+        {
           digitalWrite(ledPinRed, LOW);
           digitalWrite(ledPinGreen, HIGH);
           digitalWrite(ledPinBlue, LOW);
-      }
+        }
 
       Serial.print("co2(ppm):");
       Serial.print(co2);
@@ -342,7 +348,7 @@ void loop()
       delay (1000);
 
 #ifdef USE_NEW_POST_JSON
-      #define BUF_SIZE 200
+#define BUF_SIZE 200
       char buf[BUF_SIZE];
       build_JSON (buf, BUF_SIZE, co2, temperature, humidity);
       http_POST ("192.168.10.116", 4000, "/addSample", buf);

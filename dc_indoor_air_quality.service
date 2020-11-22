@@ -1,0 +1,28 @@
+# based on https://philipp-weissmann.de/docker-compose_mit_systemd/
+
+[Unit]
+Description=Monitoring of indoor air quality using ESP32 ro poll sensor, a nodejs server to write them to influxdb and grafana to visualize it
+Requires=docker.service
+After=docker.service
+
+[Service]
+Restart=always
+TimeoutStartSec=1200
+
+WorkingDirectory=/home/andy/Make@thon/mak4thon-co2
+
+# Remove old containers, images and volumes and update it
+#ExecStartPre=/usr/local/bin/docker-compose down -v
+#ExecStartPre=/usr/local/bin/docker-compose rm -fv
+#ExecStartPre=/usr/local/bin/docker-compose pull
+
+# Compose up
+ExecStart=/usr/bin/docker-compose up
+
+# Compose down, remove containers and volumes
+#ExecStop=/usr/bin/docker-compose down -v
+
+ExecStop=/usr/bin/docker-compose down
+
+[Install]
+WantedBy=multi-user.target

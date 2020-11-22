@@ -1,7 +1,7 @@
 /*
  * Verwendete Hardware:
  *  - Heltec WiFi Lora 32 V2
- *  - SCD30
+ *  - SCD30 oder MHZ19
  *  - RGB LED
  *
  * Funktionen:
@@ -15,12 +15,18 @@
  * Verwendete, zusätzliche Bibliotheken:
  *  - U8g2_u8x8 für OLED (über Bibliotheksverwaltung)
  *  - SparkFun_SCD30_Arduino_Library (über Bibliotheksverwaltung) https://github.com/sparkfun/SparkFun_SCD30_Arduino_Library
+ *  - MH-Z19 by Jonathan Dempsey (über Bibliotheksverwaltung) https://github.com/WifWaf/MH-Z19
  *  - Radiohead für LoRa (Zip Download, installieren) http://www.airspayce.com/mikem/arduino/RadioHead/
  */
 
 //#define USE_VOLKSZAEHLER
 #define USE_NEW_POST_JSON
 //#define USE_LORA
+
+#define USE_SCD30
+//#define USE_MHZ19
+
+/*************************************************************************************/
 
 #include <Arduino.h>
 #include <U8x8lib.h>
@@ -48,15 +54,26 @@
 #include "uuids.h"
 #include "module_token.h"
 
-#include "SparkFun_SCD30_Arduino_Library.h" //Click here to get the library: http://librarymanager/All#SparkFun_SCD30
-SCD30 airSensor;
+#ifdef USE_SCD30
+  #include "SparkFun_SCD30_Arduino_Library.h" //Click here to get the library: http://librarymanager/All#SparkFun_SCD30
+  SCD30 airSensor;
+#endif
+
+#ifdef USE_MHZ19
+  #include "MHZ19.h"
+  MHZ19 airSensor;
+  HardwareSerial mySerial(1);
+  #define RX_PIN 36
+  #define TX_PIN 2
+  #define BAUDRATE 9600
+#endif
 
 WiFiClient client;
 
 // Hardwaresettings
-const int ledPinRed = 17;
-const int ledPinGreen = 12;
-const int ledPinBlue = 13;
+const int ledPinRed = 17;     // Nico: 32
+const int ledPinGreen = 12;   // Nico: 33
+const int ledPinBlue = 13;    // Nico: 12
 
 U8X8_SSD1306_128X64_NONAME_SW_I2C u8x8(/* clock=*/ 15, /* data=*/ 4, /* reset=*/ 16);
 
@@ -73,13 +90,20 @@ void setup()
 
   Wire.begin();
 
+#ifdef USE_SCD30
   if (airSensor.begin() == false)
   {
     Serial.println("Air sensor not detected. Please check wiring. Freezing...");
     while (1)
       ;
   }
-
+#endif
+#ifdef USE_MHZ19
+  mySerial.begin(BAUDRATE, SERIAL_8N1, RX_PIN, TX_PIN);
+  airSensor.begin(mySerial);
+  airSensor.autoCalibration(); //auto calibration ON  
+#endif
+  
   Serial.println("init WiFi network");
   WiFi.begin(ssid, wlan_password);
   Serial.println("Connecting to ");
@@ -264,17 +288,22 @@ void pre ()
 
 void loop()
 {
+#ifdef USE_SCD30
   if (airSensor.dataAvailable())
+#endif
     {
       uint16_t co2 = airSensor.getCO2();
-      float humidity = airSensor.getHumidity();
       float temperature = airSensor.getTemperature();
+      float humidity = 0;
+#ifdef USE_SCD30
+      humidity = airSensor.getHumidity();
+#endif
 
-      if(co2 > 1550) { // red
+      if(co2 > 1550) { // red Nico hat 2000 daraus gemacht
           digitalWrite(ledPinRed, HIGH);
           digitalWrite(ledPinGreen, LOW);
           digitalWrite(ledPinBlue, LOW);
-      } else if(co2 > 550) {  // yellow
+      } else if(co2 > 550) {  // yellow Nico hat 1500 daraus gemacht
           digitalWrite(ledPinRed, HIGH);
           digitalWrite(ledPinGreen, HIGH);
           digitalWrite(ledPinBlue, LOW);
@@ -320,11 +349,14 @@ void loop()
 #endif
 
     }
+#ifdef USE_SCD30
   else
     {
-      Serial.println("Waiting for new SCD30 data");
+      Serial.println("Waiting for new sensor data");
       delay(1000);
     }
-
+#else
+  delay (5000);
+#endif
 
 }

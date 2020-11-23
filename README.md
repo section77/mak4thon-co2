@@ -86,7 +86,7 @@ sanitary safe levels of co2 in rooms:
 
 source: https://www.umweltbundesamt.de/sites/default/files/medien/pdfs/kohlendioxid_2008.pdf
 
-in regards to covid:
+in regards to covid. co2 concentration over ambient environment concentration. (e.g. green = 410+350 - 410+549 =~ green)
 
 | #     | co2 concentration (ppm) | color       |
 |:-----:|:-----------------------:|:-----------:|

@@ -23,6 +23,10 @@
 # Funktion:
 - Werte über LoRa entgegennehmen und über WiFi weiterleiten
 
+# Server Installation unter Ubuntu
+
+Wir liefern eine vorkonfigurierte Umgebung unter Ubuntu. Um den Server aufzusetzen (Installation von Docker und Docker-Compose und weiterer Abhängigkeiten) kann unsere [Setup-Anleitung](SETUP-Server.md) verwendet werden.
+
 # volkszaehler.org
 
 - Von einem Teammitglied betrieben

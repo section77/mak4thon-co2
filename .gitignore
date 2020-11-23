@@ -1,5 +1,6 @@
 .DS_Store
 .idea
+.vagrant
 docker-data
 CO2-api/wlan_settings.h
 CO2-api/uuids.h

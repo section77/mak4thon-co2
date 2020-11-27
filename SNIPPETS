@@ -1,0 +1,5 @@
+Die Jury konnte nichts mit markdown files anfangen, wurden daher mit
+%.pdf: %.md
+	pandoc -s -V papersize:a4 -V margin-left:2cm -V margin-top:2cm $^ -o $@
+
+zu PDFs konvertiert

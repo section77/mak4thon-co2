@@ -1,5 +1,11 @@
 #!/bin/bash
 
+echo "ATTENTION! This wipes docker completly."
+echo "   It removes all content from all containers, volumes and images."
+echo "   Please edit this script if you know what you are doing!"
+
+exit -1
+
 # Stop all containers
 docker stop `docker ps -qa`
 

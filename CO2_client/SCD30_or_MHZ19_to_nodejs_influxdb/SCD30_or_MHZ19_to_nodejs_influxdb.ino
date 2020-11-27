@@ -94,18 +94,30 @@ void setup()
   airSensor.autoCalibration(); //auto calibration ON
 #endif
 
+  // OLED
+  u8x8.begin();
+  u8x8.setFont(u8x8_font_courB18_2x3_f);
+  u8x8.setCursor(0, 0);
+  u8x8.print("connect");
+  u8x8.setCursor(0, 3);
+  u8x8.print("WiFi");
+  u8x8.setCursor(0, 5);
+
   Serial.println("init WiFi network");
   WiFi.begin(ssid, wlan_password);
   Serial.println("Connecting to ");
 
   Serial.println(String(ssid));
   Serial.println("MAC: " + WiFi.macAddress());
-  uint8_t max_wifi_retry = 10;  // entspricht 5s
+
+  uint8_t max_wifi_retry = 5;  // entspricht 10s
   while (WiFi.status() != WL_CONNECTED && --max_wifi_retry)
     {
-      delay(500);
+      delay(2000);
       Serial.print(".");
+      u8x8.print(".");
     }
+
   if (max_wifi_retry)
     {
       Serial.println("");
@@ -113,19 +125,21 @@ void setup()
       Serial.println(WiFi.localIP().toString());
     }
   else
-    Serial.println("WiFi NOT connected (using LoRa fallback)");
+    {
+      Serial.println("WiFi NOT connected");
+      u8x8.setCursor(0, 5);
+      u8x8.print("FAILED");
+      delay (3000);
+    }
 
   // RGB LED Ports konfigurieren
   pinMode(ledPinRed, OUTPUT);
   pinMode(ledPinGreen, OUTPUT);
   pinMode(ledPinBlue, OUTPUT);
 
-  // OLED
-  u8x8.begin();
-  u8x8.setFont(u8x8_font_courB18_2x3_f);
-
   // Maximal 8 Zeichen module_id ausgeben
   {
+    u8x8.clear ();
     u8x8.setCursor(0, 2);
     // nach 8 Zeichen abschneiden
 #define MAX_ID_LEN 8
@@ -235,7 +249,7 @@ void loop()
       u8x8.setCursor(0, 5);
       u8x8.printf("RSSI%4i", WiFi.RSSI());
       delay (1000);
-      
+
     }
 #ifdef USE_SCD30
   else

@@ -23,6 +23,10 @@
 # Funktion:
 - Werte über LoRa entgegennehmen und über WiFi weiterleiten
 
+# Server Installation unter Ubuntu
+
+Wir liefern eine vorkonfigurierte Umgebung unter Ubuntu. Um den Server aufzusetzen (Installation von Docker und Docker-Compose und weiterer Abhängigkeiten) kann unsere [Setup-Anleitung](SETUP-Server.md) verwendet werden.
+
 # volkszaehler.org
 
 - Von einem Teammitglied betrieben
@@ -82,7 +86,7 @@ sanitary safe levels of co2 in rooms:
 
 source: https://www.umweltbundesamt.de/sites/default/files/medien/pdfs/kohlendioxid_2008.pdf
 
-in regards to covid:
+in regards to covid. co2 concentration over ambient environment concentration. (e.g. green = 410+350 - 410+549 =~ green)
 
 | #     | co2 concentration (ppm) | color       |
 |:-----:|:-----------------------:|:-----------:|

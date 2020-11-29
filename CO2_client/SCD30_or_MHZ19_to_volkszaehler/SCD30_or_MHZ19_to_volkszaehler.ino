@@ -59,9 +59,9 @@ HardwareSerial mySerial(1);
 WiFiClient client;
 
 // Hardwaresettings
-const int ledPinRed = 17;     // Nico: 32
-const int ledPinGreen = 12;   // Nico: 33
-const int ledPinBlue = 13;    // Nico: 12
+const int ledPinRed = 17;
+const int ledPinGreen = 12;
+const int ledPinBlue = 13;
 
 U8X8_SSD1306_128X64_NONAME_SW_I2C u8x8(/* clock=*/ 15, /* data=*/ 4, /* reset=*/ 16);
 
@@ -70,7 +70,7 @@ HTTPClient http;
 void setup()
 {
   Serial.begin(115200);
-  Serial.println("CO2-api: Luftqualität messen, anzeigen und über Wifi oder LoRa weitergeben");
+  Serial.println("CO2-api: Luftqualität messen, anzeigen und über Wifi weitergeben");
 
   Wire.begin();
 
@@ -208,19 +208,19 @@ void loop()
       humidity = airSensor.getHumidity();
 #endif
 
-      if(co2 > 1550)   // red Nico hat 2000 daraus gemacht
+      if(co2 > 2000)           // red
         {
           digitalWrite(ledPinRed, HIGH);
           digitalWrite(ledPinGreen, LOW);
           digitalWrite(ledPinBlue, LOW);
         }
-      else if(co2 > 550)      // yellow Nico hat 1500 daraus gemacht
+      else if(co2 > 1500)      // yellow
         {
           digitalWrite(ledPinRed, HIGH);
           digitalWrite(ledPinGreen, HIGH);
           digitalWrite(ledPinBlue, LOW);
         }
-      else      // green
+      else                    // green
         {
           digitalWrite(ledPinRed, LOW);
           digitalWrite(ledPinGreen, HIGH);
@@ -239,20 +239,20 @@ void loop()
       Serial.println();
 
       pre ();
-      u8x8.printf("%ippm ", co2);
-      //push_value (uuid_co2, co2);
+      u8x8.printf("%4ippm ", co2);
+      push_value (uuid_co2, co2);
       delay (1000);
 
       pre ();
-      u8x8.printf("%.1f", temperature);
+      u8x8.printf("%4.1f ", temperature);
       u8x8.print("\xb0");
       u8x8.print("C ");
-      //push_value (uuid_temp, temperature);
+      push_value (uuid_temp, temperature);
       delay (1000);
 
       pre ();
-      u8x8.printf("%.1f%%rH", humidity);
-      //push_value (uuid_humidity, humidity);
+      u8x8.printf("%4.1f%%rH", humidity);
+      push_value (uuid_humidity, humidity);
       delay (1000);
 
       pre ();

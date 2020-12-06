@@ -5,7 +5,7 @@
  *  - RGB LED
  *
  * Funktionen:
- *  - CO2, Luftfeuchtigkeit und Temperatur aus dem SCD30 lesen
+ *  - CO2, Luftfeuchtigkeit und Temperatur aus dem SCD30/MHZ19 lesen
  *  - auf dem OLED darstellen
  *  - Grenzwertüberschreitung an der RGB LED anzeigen
  *  - Werte über WiFi/TCP über nodejs middleware in influxdb schreiben
@@ -228,17 +228,17 @@ void loop()
       Serial.println();
 
       u8x8.setCursor(0, 5);
-      u8x8.printf("%ippm ", co2);
+      u8x8.printf("%4ippm ", co2);
       delay (1000);
 
       u8x8.setCursor(0, 5);
-      u8x8.printf("%.1f", temperature);
+      u8x8.printf("%4.1f", temperature);
       u8x8.print("\xb0");
       u8x8.print("C ");
       delay (1000);
 
       u8x8.setCursor(0, 5);
-      u8x8.printf("%.1f%%rH", humidity);
+      u8x8.printf("%4.1f%%rH", humidity);
       delay (1000);
 
       #define BUF_SIZE 200

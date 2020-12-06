@@ -5,7 +5,7 @@
  *  - RGB LED
  *
  * Funktionen:
- *  - CO2, Luftfeuchtigkeit und Temperatur aus dem SCD30 lesen
+ *  - CO2, Luftfeuchtigkeit und Temperatur aus dem SCD30/MHZ19 lesen
  *  - auf dem OLED darstellen
  *  - Grenzwertüberschreitung an der RGB LED anzeigen
  *  - Werte über WiFi nach volkszaehler.org schreiben
@@ -331,19 +331,19 @@ void loop()
       Serial.println();
 
       pre ();
-      u8x8.printf("%ippm ", co2);
+      u8x8.printf("%4ippm ", co2);
       //push_value (uuid_co2, co2);
       delay (1000);
 
       pre ();
-      u8x8.printf("%.1f", temperature);
+      u8x8.printf("%4.1f", temperature);
       u8x8.print("\xb0");
       u8x8.print("C ");
       //push_value (uuid_temp, temperature);
       delay (1000);
 
       pre ();
-      u8x8.printf("%.1f%%rH", humidity);
+      u8x8.printf("%4.1f%%rH", humidity);
       //push_value (uuid_humidity, humidity);
       delay (1000);
 

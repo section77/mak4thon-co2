@@ -26,13 +26,14 @@ sensor_z=12;
 // usb connector
 usb_width=10;
 usb_height=12;
+usb_depth=8;
 usb_x=-33;
-usb_y=-depth/2+2;
-usb_z=-10;
+usb_y=-depth/2+3;
+usb_z=-11;
 
 // LED
 led_diameter=5;
-led_z=height/2-wall/2;
+led_z=height/2;
 
 if (case) {
   
@@ -47,8 +48,8 @@ if (case) {
           translate ([0,wall,0]) cube([width-wall,depth,height-wall], center=true); // inner space
           translate([display_x,-depth/2,display_z]) cube([display_width, 10, display_height], center=true); // display
           translate([sensor_x,-depth/2,sensor_z]) cube([sensor_width, 10, sensor_height], center=true); // sensor
-          translate([usb_x,usb_y+wall*2,usb_z]) rotate([90,0,0]) cube([usb_width, usb_height, 10], center=true); // usb connector
-          translate([0,0,led_z]) cylinder(d=led_diameter, h=wall*2, center=true); // led
+          translate([usb_x,usb_y+wall*2,usb_z]) rotate([90,0,0]) cube([usb_width, usb_height, usb_depth], center=true); // usb connector
+          translate([0,0,led_z]) cylinder(d=led_diameter, h=wall*4, center=true); // led
         }
         translate([(width/2-wall*1.5), 0, (height/2-wall*1.5)]) corner();
         translate([-(width/2-wall*1.5), 0, -(height/2-wall*1.5)]) rotate([0,180,0]) corner();

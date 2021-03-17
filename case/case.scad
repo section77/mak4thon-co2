@@ -81,14 +81,13 @@ if (back) {
     hole=3.5;
     translate([0,depth,0]) union() {
       minkowski() {
-        cube([width-wall*2,wall/2,height-wall*2], center=true); // back plate
-      //      cube([width-4,depth-1,height-4], center=true);  // body
+        cube([width-wall,wall/2,height-wall], center=true); // back plate
         rotate([90,0,0]) cylinder(r=2,h=1, center=true);
       } // rounded edge
-      translate([0,-wall,height/2-wall]) cube([width-12,wall,wall], center=true); // top
-      translate([0,-wall,-(height/2-wall)]) cube([width-12,wall,wall], center=true); // bottom
-      translate([width/2-wall,-wall,0]) rotate ([0,90,0]) cube([width-12,wall,wall], center=true); // left
-      translate([-(width/2-wall),-wall,0]) rotate ([0,90,0])  cube([width-12,wall,wall], center=true); // right   
+      translate([0,-wall*2,height/2+wall/2-wall*2]) cube([width-12,wall*3,wall*2], center=true); // top
+      translate([0,-wall*2,-(height/2-wall*1.5)]) cube([width-12,wall*3,wall*2], center=true); // bottom
+      translate([width/2-wall*1.5,-wall/2,0]) rotate ([0,90,0]) cube([width-12,wall*3,wall*2], center=true); // left
+      translate([-(width/2-wall*1.5),-wall*2,0]) rotate ([0,90,0])  cube([width-12,wall*3,wall*2], center=true); // right   
     };
     if (screwholes) { // only if you want screwholes
       translate([width/2-wall*1.5,depth,height/2-wall*1.5]) rotate ([90,0,0]) cylinder(d=hole,h=10, center=true);

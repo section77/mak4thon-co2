@@ -86,7 +86,7 @@ if (back) {
       } // rounded edge
       translate([0,-wall*2,height/2+wall/2-wall*2]) cube([width-12,wall*3,wall*2], center=true); // top
       translate([0,-wall*2,-(height/2-wall*1.5)]) cube([width-12,wall*3,wall*2], center=true); // bottom
-      translate([width/2-wall*1.5,-wall/2,0]) rotate ([0,90,0]) cube([width-12,wall*3,wall*2], center=true); // left
+      translate([width/2-wall*1.5,-wall*2,0]) rotate ([0,90,0]) cube([width-12,wall*3,wall*2], center=true); // left
       translate([-(width/2-wall*1.5),-wall*2,0]) rotate ([0,90,0])  cube([width-12,wall*3,wall*2], center=true); // right   
     };
     if (screwholes) { // only if you want screwholes

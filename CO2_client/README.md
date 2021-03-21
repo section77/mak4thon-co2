@@ -8,7 +8,7 @@ Die zwei .h.template kopieren, in .h umbenennen und die Zugangsdaten eintragen o
 Dann wird automatisch LoRa verwendet.
 
 ## Verdrahtung:
-  ../doc/CO2_Sender_ESP32_LoRa.pdf
+  ../docs/CO2\_Sender\_ESP32_LoRa.pdf
 
 ## Links:
   Heltec repo mit Schaltplänen PinoutDiagram usw. -> Sehr zu empfehlen

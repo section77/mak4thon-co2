@@ -214,7 +214,7 @@ void loop()
               client.printf("<h1>%4i </h1></p>", co2);
               client.print(color_end);
               client.printf("<p>Temperatur: %.1f &deg;C</p>", temperature);
-              client.printf("<p>Luftfeuchtigkeit: %.1f %</p>", humidity);
+              client.printf("<p>Luftfeuchtigkeit: %.1f &#37;</p>", humidity);
              
               // The HTTP response ends with another blank line
               client.println();

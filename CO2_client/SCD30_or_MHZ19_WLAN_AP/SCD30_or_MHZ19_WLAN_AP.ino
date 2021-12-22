@@ -8,7 +8,8 @@
  *  - CO2, Luftfeuchtigkeit und Temperatur aus dem SCD30/MHZ19 lesen
  *  - Grenzwertüberschreitung an der RGB LED anzeigen
  *  - Debugging über Serial 115200
- *  - Anzeige der Messwerte via WLAN (AP mode; SSID: s. Config-Block unten; erreichbar unter http://192.168.4.1/)
+ *  - Anzeige der Messwerte via WLAN (AP mode mit captive portal; die Seite wird automatisch angezeigt, sobald man sich 
+ *    mit dem AP verbindet; ansonsten ist sie erreichbar unter http://192.168.1.1/)
  *  - Messintervall kann per measurement_interval eingestellt werden
  *
  * Verwendete, zusätzliche Bibliotheken:
@@ -20,9 +21,8 @@
 //#define USE_MHZ19
 
 
-// Replace with your network credentials
-const char* ssid     = "CO2-Ampel";
-const char* password = "123456789";
+// Replace with your desired network name
+const char* ssid = "CO2-Ampel";
 
 // Hardwaresettings
 const int ledPinRed = 17;     // Nico: 32
@@ -36,6 +36,12 @@ const int level_yellow = 1500;
 
 // Load Wi-Fi library
 #include <WiFi.h>
+#include <DNSServer.h>
+
+// for AP mode
+const byte DNS_PORT = 53;
+IPAddress apIP(192, 168, 1, 1);
+DNSServer dnsServer;
 
 // Set web server port number to 80
 WiFiServer server(80);
@@ -89,13 +95,17 @@ void setup()
 
   // Connect to Wi-Fi network with SSID and password
   Serial.print("Setting AP (Access Point)...");
-  // Remove the password parameter, if you want the AP (Access Point) to be open
-  WiFi.softAP(ssid, password);
 
-  IPAddress IP = WiFi.softAPIP();
-  Serial.print("AP IP address: ");
-  Serial.println(IP);
-  
+  WiFi.disconnect();   //added to start with the wifi off, avoid crashing
+  WiFi.mode(WIFI_OFF); //added to start with the wifi off, avoid crashing
+  WiFi.mode(WIFI_AP);
+  WiFi.softAPConfig(apIP, apIP, IPAddress(255, 255, 255, 0));
+  WiFi.softAP(ssid);
+
+  // if DNSServer is started with "*" for domain name, it will reply with
+  // provided IP to all DNS request
+  dnsServer.start(DNS_PORT, "*", apIP);
+
   server.begin();
   time_now = millis()-measurement_interval;
 }
@@ -156,6 +166,9 @@ void loop()
 
       Serial.println();
     }
+
+  dnsServer.processNextRequest();
+
   WiFiClient client = server.available();   // Listen for incoming clients
 
   if (client) 
